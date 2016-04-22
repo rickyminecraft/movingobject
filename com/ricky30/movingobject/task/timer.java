@@ -315,6 +315,7 @@ public class timer
 							{
 								Currentmove = 0;
 								TheCurrentlength.replace(ObjectName.getKey(), Currentmove);
+								remove(ObjectName.getKey());
 								break;
 							}
 							final Vector3i min = Thevolume.get(ObjectName.getKey()).getBlockMin();
