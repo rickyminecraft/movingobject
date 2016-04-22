@@ -28,7 +28,7 @@ public class commandHide implements CommandExecutor
 		if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
 		{
 			UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
-			if (id == player.getUniqueId() || player.hasPermission("movingobject.bypass"))
+			if (id.equals(player.getUniqueId()) || player.hasPermission("movingobject.bypass"))
 			{
 				this.config.getNode("objectName", Name, "hide").setValue(Hide);
 				movingobject.plugin.save();

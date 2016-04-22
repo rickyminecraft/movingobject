@@ -28,11 +28,11 @@ public class commandTime implements CommandExecutor
 		if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
 		{
 			UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
-			if (id == player.getUniqueId() || player.hasPermission("movingobject.bypass"))
+			if (id.equals(player.getUniqueId()) || player.hasPermission("movingobject.bypass"))
 			{
 				if (Time <121)
 				{
-					this.config.getNode("objectName", Name, "direction").setValue(Time);
+					this.config.getNode("objectName", Name, "movingtime").setValue(Time);
 					movingobject.plugin.save();
 					src.sendMessage(Text.of("Object " , Name, " speed set to ", Time));
 					return CommandResult.success();
