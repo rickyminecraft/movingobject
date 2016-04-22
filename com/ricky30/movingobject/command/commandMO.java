@@ -23,6 +23,7 @@ public class commandMO implements CommandExecutor
 		src.sendMessage(Text.of("/mo direction NAME direction"));
 		src.sendMessage(Text.of("/mo time NAME timing"));
 		src.sendMessage(Text.of("/mo length NAME length"));
+		src.sendMessage(Text.of("/mo hide NAME true/false"));
 		return CommandResult.success();
 	}
 
