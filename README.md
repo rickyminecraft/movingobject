@@ -1,6 +1,6 @@
 # movingobject
 
-A sponge plugin allowing named zone to move in any direction using lever or button
+A sponge plugin allowing named zone to move in any direction using any block / item
 
 #usage
 
@@ -17,9 +17,27 @@ use /mo list to get a list of defined movingobject
 use /mo delete <object name> to delete named movingobject
 
 use /mo time <object name> <duration> to change time in seconds between to move
+default: 1
 
 use /mo length <object name> <length> to change displacement length
+default: the length of the object (height)
 
 use /mo direction <object name> <direction> to change displacement direction
 direction is: up down north south east west
-by default direction is up.
+default: up.
+
+use /mo hide <object name> <true/false> to hide or not the object when it move
+default: false
+
+# permissions
+
+movingobject.bypass
+movingobject.hide
+movingobject.reload
+movingobject.save
+movingobject.delete
+movingobject.direction
+movingobject.time
+movingobject.length
+movingobject.list
+movingobject.define

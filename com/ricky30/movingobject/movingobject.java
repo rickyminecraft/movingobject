@@ -136,7 +136,7 @@ public class movingobject
 				.build());
 		subcommands.put(Arrays.asList("reload"), CommandSpec.builder()
 				.description(Text.of("reload config file"))
-				.permission("movingobject.list")
+				.permission("movingobject.reload")
 				.executor(new commandReload())
 				.build());
 		subcommands.put(Arrays.asList("save"), CommandSpec.builder()
