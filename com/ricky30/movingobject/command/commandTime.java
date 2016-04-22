@@ -30,7 +30,7 @@ public class commandTime implements CommandExecutor
 			UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
 			if (id.equals(player.getUniqueId()) || player.hasPermission("movingobject.bypass"))
 			{
-				if (Time <121)
+				if (Time>=0 && Time <121)
 				{
 					this.config.getNode("objectName", Name, "movingtime").setValue(Time);
 					movingobject.plugin.save();

@@ -23,6 +23,11 @@ public class commandHide implements CommandExecutor
 	{
 		String Name = args.<String>getOne("name").get();
 		String Hide = args.<String>getOne("hide").get();
+		if (!Hide.equals("true") && !Hide.equals("false"))
+		{
+			src.sendMessage(Text.of("value must be true or false"));
+			return CommandResult.empty();
+		}
 		Player player = (Player) src;
 		this.config = movingobject.plugin.getConfig();
 		if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)

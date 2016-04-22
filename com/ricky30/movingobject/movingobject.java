@@ -106,7 +106,7 @@ public class movingobject
 				Files.createFile(getDefaultConfig());
 				setupconfig();
 
-				getConfigManager().save(this.config);
+				save();
 			}
 		}
 		catch (IOException e)

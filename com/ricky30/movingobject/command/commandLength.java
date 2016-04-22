@@ -24,6 +24,10 @@ public class commandLength implements CommandExecutor
 	{
 		String Name = args.<String>getOne("name").get();
 		int Length = args.<Integer>getOne("length").get();
+		if (Length <1)
+		{
+			Length = 1;
+		}
 		Player player = (Player) src;
 		this.config = movingobject.plugin.getConfig();
 		if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
