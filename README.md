@@ -28,6 +28,8 @@ default: up.
 
 use /mo hide <object name> <true/false> to hide or not the object when it move
 default: false
+
+right click the block/item to make it move and again to make it return to it's initial position
 ```
 # permissions
 ```
