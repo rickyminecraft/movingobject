@@ -28,7 +28,7 @@ public class commandSave implements CommandExecutor
 		this.config = movingobject.plugin.getConfig();
 		if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
 		{
-			src.sendMessage(Text.of("Object ", Name, " already saved. Use update instead or change name."));
+			src.sendMessage(Text.of("Object ", Name, " already saved. change name."));
 			return CommandResult.empty();
 		}
 		if (selectionevent.IsreadytoSave())
@@ -52,7 +52,7 @@ public class commandSave implements CommandExecutor
 	        this.config.getNode("objectName", Name, "direction").setValue("up");
 	        this.config.getNode("objectName", Name, "length").setValue(Objectsize.getY());
 	        this.config.getNode("objectName", Name, "hide").setValue("false");
-	        this.config.getNode("objectName", Name, "owner").setValue(player.getUniqueId());
+	        this.config.getNode("objectName", Name, "owner").setValue(player.getUniqueId().toString());
 			movingobject.plugin.save();
 			src.sendMessage(Text.of("Object " , Name, " saved"));
 			return CommandResult.success();

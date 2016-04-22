@@ -30,7 +30,7 @@ public class commandDirection implements CommandExecutor
 			if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
 			{
 				UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
-				if (id == player.getUniqueId())
+				if (id == player.getUniqueId() || player.hasPermission("movingobject.bypass"))
 				{
 					this.config.getNode("objectName", Name, "direction").setValue(Dir);
 					movingobject.plugin.save();

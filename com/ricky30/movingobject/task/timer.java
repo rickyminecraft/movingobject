@@ -90,7 +90,7 @@ public class timer
 								case "up":
 									Min = new Vector3i(Min.getX(), Min.getY()+1, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()+1, Max.getZ());
-									hiding2 = new Vector3i(0, Currentmove, 0);
+									hiding2 = new Vector3i(0, Currentmove+1, 0);
 									Min = new Vector3i(Min.getX(), Min.getY()+Currentmove, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()+Currentmove, Max.getZ());
 									Min2 = new Vector3i(Min2.getX(), Min2.getY()+Currentmove, Min2.getZ());
@@ -98,7 +98,7 @@ public class timer
 								case "down":
 									Min = new Vector3i(Min.getX(), Min.getY()-1, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()-1, Max.getZ());
-									hiding1 = new Vector3i(0, Currentmove, 0);
+									hiding1 = new Vector3i(0, Currentmove+1, 0);
 									Min = new Vector3i(Min.getX(), Min.getY()-Currentmove, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()-Currentmove, Max.getZ());
 									Min2 = new Vector3i(Min2.getX(), Min2.getY()-Currentmove, Min2.getZ());
@@ -106,7 +106,7 @@ public class timer
 								case "north":
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()-1);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()-1);
-									hiding1 = new Vector3i(0, 0, Currentmove);
+									hiding1 = new Vector3i(0, 0, Currentmove+1);
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()-Currentmove);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()-Currentmove);
 									Min2 = new Vector3i(Min2.getX(), Min2.getY(), Min2.getZ()-Currentmove);
@@ -114,7 +114,7 @@ public class timer
 								case "south":
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()+1);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()+1);
-									hiding2 = new Vector3i(0, 0, Currentmove);
+									hiding2 = new Vector3i(0, 0, Currentmove+1);
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()+Currentmove);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()+Currentmove);
 									Min2 = new Vector3i(Min2.getX(), Min2.getY(), Min2.getZ()+Currentmove);
@@ -122,7 +122,7 @@ public class timer
 								case "east":
 									Min = new Vector3i(Min.getX()+1, Min.getY(), Min.getZ());
 									Max = new Vector3i(Max.getX()+1, Max.getY(), Max.getZ());
-									hiding2 = new Vector3i(Currentmove, 0, 0);
+									hiding2 = new Vector3i(Currentmove+1, 0, 0);
 									Min = new Vector3i(Min.getX()+Currentmove, Min.getY(), Min.getZ());
 									Max = new Vector3i(Max.getX()+Currentmove, Max.getY(), Max.getZ());
 									Min2 = new Vector3i(Min2.getX()+Currentmove, Min2.getY(), Min2.getZ());
@@ -130,7 +130,7 @@ public class timer
 								case "west":
 									Min = new Vector3i(Min.getX()-1, Min.getY(), Min.getZ());
 									Max = new Vector3i(Max.getX()-1, Max.getY(), Max.getZ());
-									hiding1 = new Vector3i(Currentmove, 0, 0);
+									hiding1 = new Vector3i(Currentmove+1, 0, 0);
 									Min = new Vector3i(Min.getX()-Currentmove, Min.getY(), Min.getZ());
 									Max = new Vector3i(Max.getX()-Currentmove, Max.getY(), Max.getZ());
 									Min2 = new Vector3i(Min2.getX()-Currentmove, Min2.getY(), Min2.getZ());
