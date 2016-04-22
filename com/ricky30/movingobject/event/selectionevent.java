@@ -75,7 +75,7 @@ public class selectionevent
 						second = Event.getTargetBlock().getPosition();
 						secondaryUsed = true;
 						player.getCommandSource().get().sendMessage(Text.of("Second point defined"));
-						player.getCommandSource().get().sendMessage(Text.of("Now select the trigger block"));
+						player.getCommandSource().get().sendMessage(Text.of("Now select the trigger block/item"));
 					}
 					else if (!triggerselect)
 					{

@@ -210,7 +210,7 @@ public class timer
 				}
 				else
 				{
-					//if false then we can move
+					//if true then we can move
 					if (Thestat.get(ObjectName.getKey()).booleanValue())
 					{
 						if (TheCurrentduration.get(ObjectName.getKey()).intValue() < Theduration.get(ObjectName.getKey()).intValue())
@@ -386,9 +386,11 @@ public class timer
 	public static void stop(String Name)
 	{
 		Theactivestat.replace(Name, true, false);
+		//if we don't do this we got an unexpected behavior
+		Thestat.replace(Name, true);
 	}
 	
-	//wen the object return to is first position, we delete it
+	//when the object return to the first position, we delete it
 	private static void remove(String Name)
 	{
 		if (Thedirection.get(Name) != null)
