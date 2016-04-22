@@ -1,7 +1,5 @@
 package com.ricky30.movingobject.event;
 
-import org.spongepowered.api.block.BlockSnapshot;
-import org.spongepowered.api.data.Transaction;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -10,7 +8,6 @@ import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.text.Text;
 import com.flowpowered.math.vector.Vector3i;
-import com.ricky30.movingobject.utility.position;
 
 public class selectionevent
 {
@@ -40,18 +37,6 @@ public class selectionevent
 				}
 			}
 		}
-		//disabled until i find idea
-//		else
-//		{
-//			for (Transaction<BlockSnapshot> t: Event.getTransactions())
-//			{
-//				Vector3i pos = t.getOriginal().getLocation().get().getBlockPosition();
-//				if (position.isInsideMO(pos, Event.getTargetWorld()))
-//				{
-//					Event.setCancelled(true);
-//				}
-//			}
-//		}
 	}
 	
 	@Listener
