@@ -145,6 +145,13 @@ public class timer
 							{
 								Thestat.replace(ObjectName.getKey(), false, true);
 							}
+							//this is to prevent misuse of redstone circuits
+							if (Currentmove > Thelength.get(ObjectName.getKey()).intValue())
+							{
+								Currentmove = Thelength.get(ObjectName.getKey()).intValue();
+								TheCurrentlength.replace(ObjectName.getKey(), Currentmove);
+								break;
+							}
 							final Vector3i min = Thevolume.get(ObjectName.getKey()).getBlockMin();
 							final Vector3i max = Thevolume.get(ObjectName.getKey()).getBlockMax();
 							
@@ -303,6 +310,13 @@ public class timer
 							{
 								Thestat.replace(ObjectName.getKey(), true, false);
 							}
+							//this is to prevent misuse of redstone circuits
+							if (Currentmove < 0)
+							{
+								Currentmove = 0;
+								TheCurrentlength.replace(ObjectName.getKey(), Currentmove);
+								break;
+							}
 							final Vector3i min = Thevolume.get(ObjectName.getKey()).getBlockMin();
 							final Vector3i max = Thevolume.get(ObjectName.getKey()).getBlockMax();
 							int hiding = 0;
@@ -432,7 +446,7 @@ public class timer
 	//stop animation (lever pull)
 	public static void stop(String Name)
 	{
-		Theactivestat.replace(Name, true, false);
+		Theactivestat.replace(Name, false);
 		//if we don't do this we got an unexpected behavior
 		Thestat.replace(Name, true);
 	}
