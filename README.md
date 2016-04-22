@@ -30,7 +30,7 @@ use /mo hide <object name> <true/false> to hide or not the object when it move
 default: false
 
 # permissions
-
+```
 movingobject.bypass
 movingobject.hide
 movingobject.reload
@@ -41,3 +41,4 @@ movingobject.time
 movingobject.length
 movingobject.list
 movingobject.define
+```
