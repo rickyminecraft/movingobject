@@ -3,7 +3,7 @@
 A sponge plugin allowing named zone to move in any direction using any block / item
 
 #usage
-
+```
 use /mo to get a list of commands
 
 use /mo define to start create a movingobject with a stick
@@ -28,7 +28,7 @@ default: up.
 
 use /mo hide <object name> <true/false> to hide or not the object when it move
 default: false
-
+```
 # permissions
 ```
 movingobject.bypass
