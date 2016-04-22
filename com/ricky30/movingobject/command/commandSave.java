@@ -52,6 +52,7 @@ public class commandSave implements CommandExecutor
 	        this.config.getNode("objectName", Name, "direction").setValue("up");
 	        this.config.getNode("objectName", Name, "length").setValue(Objectsize.getY());
 	        this.config.getNode("objectName", Name, "hide").setValue("false");
+	        this.config.getNode("objectName", Name, "owner").setValue(player.getUniqueId());
 			movingobject.plugin.save();
 			src.sendMessage(Text.of("Object " , Name, " saved"));
 			return CommandResult.success();

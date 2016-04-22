@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import com.ricky30.movingobject.command.commandDefine;
 import com.ricky30.movingobject.command.commandDelete;
 import com.ricky30.movingobject.command.commandDirection;
+import com.ricky30.movingobject.command.commandHide;
 import com.ricky30.movingobject.command.commandLength;
 import com.ricky30.movingobject.command.commandList;
 import com.ricky30.movingobject.command.commandMO;
@@ -168,8 +169,15 @@ public class movingobject
 				.description(Text.of("Set displacement length for named object"))
 				.permission("movingobject.length")
 				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
-				GenericArguments.onlyOne(GenericArguments.integer(Text.of("duration")))))
+				GenericArguments.onlyOne(GenericArguments.integer(Text.of("length")))))
 				.executor(new commandLength())
+				.build());
+		subcommands.put(Arrays.asList("hide"), CommandSpec.builder()
+				.description(Text.of("Set hidding for named object"))
+				.permission("movingobject.hide")
+				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
+				GenericArguments.onlyOne(GenericArguments.string(Text.of("hide")))))
+				.executor(new commandHide())
 				.build());
 		
 		CommandSpec movingobjectcommand = CommandSpec.builder()

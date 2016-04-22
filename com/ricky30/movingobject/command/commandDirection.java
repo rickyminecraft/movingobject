@@ -1,10 +1,13 @@
 package com.ricky30.movingobject.command;
 
+import java.util.UUID;
+
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 
 import com.ricky30.movingobject.movingobject;
@@ -20,15 +23,24 @@ public class commandDirection implements CommandExecutor
 	{
 		String Name = args.<String>getOne("name").get();
 		String Dir = args.<String>getOne("direction").get();
+		Player player = (Player) src;
 		if (Dir.equals("north") || Dir.equals("south") || Dir.equals("east") || Dir.equals("west") || Dir.equals("up") || Dir.equals("down"))
 		{
 			this.config = movingobject.plugin.getConfig();
 			if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
 			{
-				this.config.getNode("objectName", Name, "direction").setValue(Dir);
-				movingobject.plugin.save();
-				src.sendMessage(Text.of("Object " , Name, " direction set to ", Dir));
-				return CommandResult.success();
+				UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
+				if (id == player.getUniqueId())
+				{
+					this.config.getNode("objectName", Name, "direction").setValue(Dir);
+					movingobject.plugin.save();
+					src.sendMessage(Text.of("Object " , Name, " direction set to ", Dir));
+					return CommandResult.success();
+				}
+				else
+				{
+					src.sendMessage(Text.of("you're not the owner of this object"));
+				}
 			}
 		}
 		else

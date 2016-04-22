@@ -38,6 +38,8 @@ public class timer
 	static Map<String, Vector3i> Thevector2 = new HashMap<String, Vector3i>();
 	//is activated or not (like with a lever)
 	static Map<String, Boolean> Theactivestat = new HashMap<String, Boolean>();
+	//stored volume in case of hiding
+	static Map<String, MutableBlockVolume> Thevolume = new HashMap<String, MutableBlockVolume>();
 	
 	
 	public static void run() 
@@ -68,13 +70,15 @@ public class timer
 							//we get the min and max out of them
 							Vector3i Min = size.Min(A, B);
 							Vector3i Max = size.Max(A, B);
+							Vector3i HideMin = Min;
+							Vector3i HideMax = Max;
 							//min2 is the same as min but without 1 added
 							Vector3i Min2 = Min;
 							//we get the world where the object is
 							World world = Sponge.getServer().getWorld(Theworld.get(ObjectName.getKey()).toString()).get();
 							//we get the current displacement
 							int Currentmove = TheCurrentlength.get(ObjectName.getKey());
-							//for now, not used
+							//not used yet
 							Vector3i hiding1 = new Vector3i(0, 0, 0);
 							Vector3i hiding2 = new Vector3i(0, 0, 0);
 							//switch depending on direction
@@ -86,7 +90,7 @@ public class timer
 								case "up":
 									Min = new Vector3i(Min.getX(), Min.getY()+1, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()+1, Max.getZ());
-									hiding2 = new Vector3i(hiding2.getX(), hiding2.getY()+1, hiding2.getZ());
+									hiding2 = new Vector3i(0, Currentmove, 0);
 									Min = new Vector3i(Min.getX(), Min.getY()+Currentmove, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()+Currentmove, Max.getZ());
 									Min2 = new Vector3i(Min2.getX(), Min2.getY()+Currentmove, Min2.getZ());
@@ -94,7 +98,7 @@ public class timer
 								case "down":
 									Min = new Vector3i(Min.getX(), Min.getY()-1, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()-1, Max.getZ());
-									hiding1 = new Vector3i(hiding1.getX(), hiding1.getY()+1, hiding1.getZ());
+									hiding1 = new Vector3i(0, Currentmove, 0);
 									Min = new Vector3i(Min.getX(), Min.getY()-Currentmove, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()-Currentmove, Max.getZ());
 									Min2 = new Vector3i(Min2.getX(), Min2.getY()-Currentmove, Min2.getZ());
@@ -102,7 +106,7 @@ public class timer
 								case "north":
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()-1);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()-1);
-									hiding1 = new Vector3i(hiding1.getX(), hiding1.getY(), hiding1.getZ()+1);
+									hiding1 = new Vector3i(0, 0, Currentmove);
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()-Currentmove);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()-Currentmove);
 									Min2 = new Vector3i(Min2.getX(), Min2.getY(), Min2.getZ()-Currentmove);
@@ -110,26 +114,26 @@ public class timer
 								case "south":
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()+1);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()+1);
-									hiding2 = new Vector3i(hiding2.getX(), hiding2.getY(), hiding2.getZ()+1);
+									hiding2 = new Vector3i(0, 0, Currentmove);
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()+Currentmove);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()+Currentmove);
 									Min2 = new Vector3i(Min2.getX(), Min2.getY(), Min2.getZ()+Currentmove);
 									break;
 								case "east":
-									Min = new Vector3i(Min.getX()-1, Min.getY(), Min.getZ());
-									Max = new Vector3i(Max.getX()-1, Max.getY(), Max.getZ());
-									hiding1 = new Vector3i(hiding1.getX()+1, hiding1.getY(), hiding1.getZ());
-									Min = new Vector3i(Min.getX()-Currentmove, Min.getY(), Min.getZ());
-									Max = new Vector3i(Max.getX()-Currentmove, Max.getY(), Max.getZ());
-									Min2 = new Vector3i(Min2.getX()-Currentmove, Min2.getY(), Min2.getZ());
-									break;
-								case "west":
 									Min = new Vector3i(Min.getX()+1, Min.getY(), Min.getZ());
 									Max = new Vector3i(Max.getX()+1, Max.getY(), Max.getZ());
-									hiding2 = new Vector3i(hiding2.getX()+1, hiding2.getY(), hiding2.getZ());
+									hiding2 = new Vector3i(Currentmove, 0, 0);
 									Min = new Vector3i(Min.getX()+Currentmove, Min.getY(), Min.getZ());
 									Max = new Vector3i(Max.getX()+Currentmove, Max.getY(), Max.getZ());
 									Min2 = new Vector3i(Min2.getX()+Currentmove, Min2.getY(), Min2.getZ());
+									break;
+								case "west":
+									Min = new Vector3i(Min.getX()-1, Min.getY(), Min.getZ());
+									Max = new Vector3i(Max.getX()-1, Max.getY(), Max.getZ());
+									hiding1 = new Vector3i(Currentmove, 0, 0);
+									Min = new Vector3i(Min.getX()-Currentmove, Min.getY(), Min.getZ());
+									Max = new Vector3i(Max.getX()-Currentmove, Max.getY(), Max.getZ());
+									Min2 = new Vector3i(Min2.getX()-Currentmove, Min2.getY(), Min2.getZ());
 									break;
 							}
 							//then we add 1 to currentmove
@@ -141,42 +145,52 @@ public class timer
 							{
 								Thestat.replace(ObjectName.getKey(), false, true);
 							}
-							//a buffer to copy blocks
-							final MutableBlockVolume volume = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(A, B));
-							final Vector3i min = volume.getBlockMin();
-							final Vector3i max = volume.getBlockMax();
-							//we copy blocks inside the buffer
-							for (int x = min.getX(); x <= max.getX(); x++) 
-							{
-								for (int y = min.getY(); y <= max.getY(); y++) 
-								{
-									for (int z = min.getZ(); z <= max.getZ(); z++) 
-									{
-										volume.setBlock(x, y, z, world.getBlock(x+Min2.getX(), y+Min2.getY(), z+Min2.getZ()));
-									}
-								}
-							}
-							//and we fill the current block space with air
-							for (int x = min.getX(); x <= max.getX(); x++) 
-							{
-								for (int y = min.getY(); y <= max.getY(); y++) 
-								{
-									for (int z = min.getZ(); z <= max.getZ(); z++) 
-									{
-										world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, BlockTypes.AIR.getDefaultState());
-									}
-								}
-							}
+							final Vector3i min = Thevolume.get(ObjectName.getKey()).getBlockMin();
+							final Vector3i max = Thevolume.get(ObjectName.getKey()).getBlockMax();
+							
 							//here goes the hiding
-							int hiding = 0;
-//							if (Thehide.get(ObjectName.getKey()).booleanValue())
-//							{
-//								hiding++;
-//							}
+							int hiding = 0; //not hiding
+							if (Thehide.get(ObjectName.getKey()).booleanValue())
+							{
+								hiding++;
+							}
+							
+							switch (hiding)
+							{
+								//not hiding
+								case 0:
+									//and we fill the current block space with air
+									for (int x = min.getX(); x <= max.getX(); x++) 
+									{
+										for (int y = min.getY(); y <= max.getY(); y++) 
+										{
+											for (int z = min.getZ(); z <= max.getZ(); z++) 
+											{
+												world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, BlockTypes.AIR.getDefaultState());
+											}
+										}
+									}
+									break;
+								//hiding
+								case 1:
+									//and we fill the current block space with air
+									for (int x = HideMin.getX(); x <= HideMax.getX(); x++) 
+									{
+										for (int y = HideMin.getY(); y <= HideMax.getY(); y++) 
+										{
+											for (int z = HideMin.getZ(); z <= HideMax.getZ(); z++) 
+											{
+												world.setBlock(x, y, z, BlockTypes.AIR.getDefaultState());
+											}
+										}
+									}
+									break;
+							}
 							
 							//finally, we put the blocks inside the buffer on the new location
 							switch (hiding)
 							{
+								//not hiding
 								case 0:
 									for (int x = min.getX(); x <= max.getX(); x++) 
 									{
@@ -184,21 +198,21 @@ public class timer
 										{
 											for (int z = min.getZ(); z <= max.getZ(); z++) 
 											{
-												BlockState block = volume.getBlock(x, y, z);
+												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
 											}
 										}
 									}
 									break;
+								//hiding
 								case 1:
-									//probably buggy
 									for (int x = min.getX() + hiding1.getX(); x <= max.getX() - hiding2.getX(); x++) 
 									{
 										for (int y = min.getY() + hiding1.getY(); y <= max.getY() - hiding2.getY(); y++) 
 										{
 											for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
 											{
-												BlockState block = volume.getBlock(x, y, z);
+												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
 											}
 										}
@@ -225,6 +239,8 @@ public class timer
 							Vector3i B = Thevector2.get(ObjectName.getKey());
 							Vector3i Min = size.Min(A, B);
 							Vector3i Max = size.Max(A, B);
+							Vector3i HideMin = Min;
+							Vector3i HideMax = Max;
 							Vector3i Min2 = Min;
 							World world = Sponge.getServer().getWorld(Theworld.get(ObjectName.getKey()).toString()).get();
 							int Currentmove = TheCurrentlength.get(ObjectName.getKey());
@@ -235,7 +251,7 @@ public class timer
 								case "up":
 									Min = new Vector3i(Min.getX(), Min.getY()-1, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()-1, Max.getZ());
-									hiding2 = new Vector3i(hiding2.getX(), hiding2.getY()-1, hiding2.getZ());
+									hiding2 = new Vector3i(0, Currentmove-1, 0);
 									Min = new Vector3i(Min.getX(), Min.getY()+Currentmove, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()+Currentmove, Max.getZ());
 									Min2 = new Vector3i(Min2.getX(), Min2.getY()+Currentmove, Min2.getZ());
@@ -243,7 +259,7 @@ public class timer
 								case "down":
 									Min = new Vector3i(Min.getX(), Min.getY()+1, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()+1, Max.getZ());
-									hiding1 = new Vector3i(hiding1.getX(), hiding1.getY()+1, hiding1.getZ());
+									hiding1 = new Vector3i(0, Currentmove-1, 0);
 									Min = new Vector3i(Min.getX(), Min.getY()-Currentmove, Min.getZ());
 									Max = new Vector3i(Max.getX(), Max.getY()-Currentmove, Max.getZ());
 									Min2 = new Vector3i(Min2.getX(), Min2.getY()-Currentmove, Min2.getZ());
@@ -251,7 +267,7 @@ public class timer
 								case "north":
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()+1);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()+1);
-									hiding1 = new Vector3i(hiding1.getX(), hiding1.getY(), hiding1.getZ()+1);
+									hiding1 = new Vector3i(0, 0, Currentmove-1);
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()-Currentmove);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()-Currentmove);
 									Min2 = new Vector3i(Min2.getX(), Min2.getY(), Min2.getZ()-Currentmove);
@@ -259,26 +275,26 @@ public class timer
 								case "south":
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()-1);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()-1);
-									hiding2 = new Vector3i(hiding2.getX(), hiding2.getY(), hiding2.getZ()+1);
+									hiding2 = new Vector3i(0, 0, Currentmove-1);
 									Min = new Vector3i(Min.getX(), Min.getY(), Min.getZ()+Currentmove);
 									Max = new Vector3i(Max.getX(), Max.getY(), Max.getZ()+Currentmove);
 									Min2 = new Vector3i(Min2.getX(), Min2.getY(), Min2.getZ()+Currentmove);
 									break;
 								case "east":
-									Min = new Vector3i(Min.getX()+1, Min.getY(), Min.getZ());
-									Max = new Vector3i(Max.getX()+1, Max.getY(), Max.getZ());
-									hiding1 = new Vector3i(hiding1.getX()+1, hiding1.getY(), hiding1.getZ());
-									Min = new Vector3i(Min.getX()-Currentmove, Min.getY(), Min.getZ());
-									Max = new Vector3i(Max.getX()-Currentmove, Max.getY(), Max.getZ());
-									Min2 = new Vector3i(Min2.getX()-Currentmove, Min2.getY(), Min2.getZ());
-									break;
-								case "west":
 									Min = new Vector3i(Min.getX()-1, Min.getY(), Min.getZ());
 									Max = new Vector3i(Max.getX()-1, Max.getY(), Max.getZ());
-									hiding1 = new Vector3i(hiding1.getX()+1, hiding1.getY(), hiding1.getZ());
+									hiding2 = new Vector3i(Currentmove-1, 0, 0);
 									Min = new Vector3i(Min.getX()+Currentmove, Min.getY(), Min.getZ());
 									Max = new Vector3i(Max.getX()+Currentmove, Max.getY(), Max.getZ());
 									Min2 = new Vector3i(Min2.getX()+Currentmove, Min2.getY(), Min2.getZ());
+									break;
+								case "west":
+									Min = new Vector3i(Min.getX()+1, Min.getY(), Min.getZ());
+									Max = new Vector3i(Max.getX()+1, Max.getY(), Max.getZ());
+									hiding1 = new Vector3i(Currentmove-1, 0, 0);
+									Min = new Vector3i(Min.getX()-Currentmove, Min.getY(), Min.getZ());
+									Max = new Vector3i(Max.getX()-Currentmove, Max.getY(), Max.getZ());
+									Min2 = new Vector3i(Min2.getX()-Currentmove, Min2.getY(), Min2.getZ());
 									break;
 							}
 							Currentmove--;
@@ -287,36 +303,49 @@ public class timer
 							{
 								Thestat.replace(ObjectName.getKey(), true, false);
 							}
-							final MutableBlockVolume volume = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(A, B));
-							final Vector3i min = volume.getBlockMin();
-							final Vector3i max = volume.getBlockMax();
-							for (int x = min.getX(); x <= max.getX(); x++) 
-							{
-								for (int y = min.getY(); y <= max.getY(); y++) 
-								{
-									for (int z = min.getZ(); z <= max.getZ(); z++) 
-									{
-										volume.setBlock(x, y, z, world.getBlock(x+Min2.getX(), y+Min2.getY(), z+Min2.getZ()));
-									}
-								}
-							}
-							for (int x = min.getX(); x <= max.getX(); x++) 
-							{
-								for (int y = min.getY(); y <= max.getY(); y++) 
-								{
-									for (int z = min.getZ(); z <= max.getZ(); z++) 
-									{
-										world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, BlockTypes.AIR.getDefaultState());
-									}
-								}
-							}
+							final Vector3i min = Thevolume.get(ObjectName.getKey()).getBlockMin();
+							final Vector3i max = Thevolume.get(ObjectName.getKey()).getBlockMax();
 							int hiding = 0;
-//							if (Thehide.get(ObjectName.getKey()).booleanValue())
-//							{
-//								hiding++;
-//							}
+							if (Thehide.get(ObjectName.getKey()).booleanValue())
+							{
+								hiding++;
+							}
+							
 							switch (hiding)
 							{
+								//not hiding
+								case 0:
+									//and we fill the current block space with air
+									for (int x = min.getX(); x <= max.getX(); x++) 
+									{
+										for (int y = min.getY(); y <= max.getY(); y++) 
+										{
+											for (int z = min.getZ(); z <= max.getZ(); z++) 
+											{
+												world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, BlockTypes.AIR.getDefaultState());
+											}
+										}
+									}
+									break;
+								//hiding
+								case 1:
+									//and we fill the current block space with air
+									for (int x = HideMin.getX(); x <= HideMax.getX(); x++) 
+									{
+										for (int y = HideMin.getY(); y <= HideMax.getY(); y++) 
+										{
+											for (int z = HideMin.getZ(); z <= HideMax.getZ(); z++) 
+											{
+												world.setBlock(x, y, z, BlockTypes.AIR.getDefaultState());
+											}
+										}
+									}
+									break;
+							}
+
+							switch (hiding)
+							{
+								//not hiding
 								case 0:
 									for (int x = min.getX(); x <= max.getX(); x++) 
 									{
@@ -324,21 +353,21 @@ public class timer
 										{
 											for (int z = min.getZ(); z <= max.getZ(); z++) 
 											{
-												BlockState block = volume.getBlock(x, y, z);
+												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
 											}
 										}
 									}
 									break;
+								//hiding
 								case 1:
-									//probably buggy
 									for (int x = min.getX() + hiding1.getX(); x <= max.getX() - hiding2.getX(); x++) 
 									{
 										for (int y = min.getY() + hiding1.getY(); y <= max.getY() - hiding2.getY(); y++) 
 										{
 											for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
 											{
-												BlockState block = volume.getBlock(x, y, z);
+												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
 											}
 										}
@@ -374,6 +403,24 @@ public class timer
 			Thevector2.put(Name, Second);
 			Thestat.put(Name, false);
 			Theactivestat.put(Name, true);
+			//here we copy the blocks from the world to the backup volume
+			MutableBlockVolume volume = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(First, Second));
+			World world = Sponge.getServer().getWorld(World).get();
+			final Vector3i min = volume.getBlockMin();
+			final Vector3i max = volume.getBlockMax();
+			final Vector3i Min2 = size.Min(First, Second);
+			//we copy blocks inside the volume
+			for (int x = min.getX(); x <= max.getX(); x++) 
+			{
+				for (int y = min.getY(); y <= max.getY(); y++) 
+				{
+					for (int z = min.getZ(); z <= max.getZ(); z++) 
+					{
+						volume.setBlock(x, y, z, world.getBlock(x+Min2.getX(), y+Min2.getY(), z+Min2.getZ()));
+					}
+				}
+			}
+			Thevolume.put(Name, volume);
 		}
 		else
 		{
@@ -406,6 +453,7 @@ public class timer
 			Thevector2.remove(Name);
 			Thehide.remove(Name);
 			Theactivestat.remove(Name);
+			Thevolume.remove(Name);
 		}
 	}
 }
