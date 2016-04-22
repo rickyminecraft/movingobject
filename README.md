@@ -1,6 +1,6 @@
 # movingobject
 
-A sponge plugin allowing named zont to move in any direction using lever or button
+A sponge plugin allowing named zone to move in any direction using lever or button
 
 #usage
 
@@ -22,4 +22,4 @@ use /mo length <object name> <length> to change displacement length
 
 use /mo direction <object name> <direction> to change displacement direction
 direction is: up down north south east west
-
+by default direction is up.
