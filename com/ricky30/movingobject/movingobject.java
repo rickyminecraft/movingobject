@@ -16,6 +16,7 @@ import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.scheduler.Task;
@@ -40,7 +41,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.0")
+@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.0r")
 public class movingobject
 {
 	public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;
@@ -100,13 +101,17 @@ public class movingobject
 		try
 		{
 			reload();
+			if (this.config.getNode("ConfigVersion").getInt() != 2)
+			{
+				getLogger().info("your config file is outdated");
+				getLogger().info("I update it");
+				setupconfig();
+			}
 			if (!Files.exists(getDefaultConfig())) 
 			{
 
 				Files.createFile(getDefaultConfig());
 				setupconfig();
-
-				save();
 			}
 		}
 		catch (IOException e)
@@ -203,7 +208,8 @@ public class movingobject
 	
 	private void setupconfig()
 	{
-        this.config.getNode("ConfigVersion").setValue(1);
+        this.config.getNode("ConfigVersion").setValue(2);
+        this.config.getNode("tool").setValue(ItemTypes.STICK.getId());
         save();
 	}
 	
@@ -227,5 +233,10 @@ public class movingobject
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	public String GetTool()
+	{
+		return this.config.getNode("tool").getString();
 	}
 }

@@ -5,9 +5,9 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.text.Text;
 import com.flowpowered.math.vector.Vector3i;
+import com.ricky30.movingobject.movingobject;
 
 public class selectionevent
 {
@@ -31,7 +31,7 @@ public class selectionevent
 			}
 			if (player.getItemInHand().isPresent())
 			{
-				if (player.getItemInHand().get().getItem() == ItemTypes.STICK)
+				if (player.getItemInHand().get().getItem().getId().equals(movingobject.plugin.GetTool()))
 				{
 					Event.setCancelled(true);
 				}
@@ -46,7 +46,7 @@ public class selectionevent
 		{
 			if (player.getItemInHand().isPresent())
 			{
-				if (player.getItemInHand().get().getItem() == ItemTypes.STICK)
+				if (player.getItemInHand().get().getItem().getId().equals(movingobject.plugin.GetTool()))
 				{
 					if (!primaryUsed)
 					{
