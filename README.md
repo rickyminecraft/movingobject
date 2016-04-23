@@ -1,6 +1,8 @@
 # movingobject
 
-A sponge plugin allowing named zone to move in any direction using any block / item
+A sponge plugin allowing named zone to move in a defined direction using any block / item
+
+When you define a MO you select a block/item who act as a trigger, you also can use redstone. Then you it the trigger with right click or active redstone circuit to active the MO.
 
 #usage
 ```
