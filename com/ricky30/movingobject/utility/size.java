@@ -35,7 +35,7 @@ public class size
 		{
 			z1 = first.getZ() - second.getZ();
 		}
-		//set the size of the mine
+		//set the size of the object
 		Vector3i size = new Vector3i(x1, y1, z1);
 		size = size.add(1, 1, 1);
 		currentsize = size;

@@ -20,7 +20,7 @@ public class position
 		int PosZ = Pos.getZ();
 		for (Object text: config.getNode("objectName").getChildrenMap().keySet())
 		{
-			//get the size of the mine
+			//get the size of the object
 			int X1, X2, Y1, Y2, Z1, Z2;
 			X1 = config.getNode("objectName", text.toString(), "depart_X").getInt();
 			Y1 = config.getNode("objectName", text.toString(), "depart_Y").getInt();

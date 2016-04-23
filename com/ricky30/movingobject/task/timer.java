@@ -25,7 +25,7 @@ public class timer
 	//the length to move
 	static Map<String, Integer> Thelength = new HashMap<String, Integer>();
 	//the step already done
-	static Map<String, Integer> TheCurrentlength = new HashMap<String, Integer>();
+	static Map<String, Integer> TheCurrentposition = new HashMap<String, Integer>();
 	//the duration of a move
 	static Map<String, Integer> Theduration = new HashMap<String, Integer>();
 	//the time already passed
@@ -77,8 +77,7 @@ public class timer
 							//we get the world where the object is
 							World world = Sponge.getServer().getWorld(Theworld.get(ObjectName.getKey()).toString()).get();
 							//we get the current displacement
-							int Currentmove = TheCurrentlength.get(ObjectName.getKey());
-							//not used yet
+							int Currentmove = TheCurrentposition.get(ObjectName.getKey());
 							Vector3i hiding1 = new Vector3i(0, 0, 0);
 							Vector3i hiding2 = new Vector3i(0, 0, 0);
 							//switch depending on direction
@@ -138,8 +137,9 @@ public class timer
 							}
 							//then we add 1 to currentmove
 							Currentmove++;
+							movingobject.plugin.Updatestats(Currentmove, "on", ObjectName.getKey());
 							//and we update the displacement stat
-							TheCurrentlength.replace(ObjectName.getKey(), Currentmove);
+							TheCurrentposition.replace(ObjectName.getKey(), Currentmove);
 							//if we get at the end then next time we don't move
 							if (Currentmove == Thelength.get(ObjectName.getKey()).intValue())
 							{
@@ -149,7 +149,7 @@ public class timer
 							if (Currentmove > Thelength.get(ObjectName.getKey()).intValue())
 							{
 								Currentmove = Thelength.get(ObjectName.getKey()).intValue();
-								TheCurrentlength.replace(ObjectName.getKey(), Currentmove);
+								TheCurrentposition.replace(ObjectName.getKey(), Currentmove);
 								break;
 							}
 							final Vector3i min = Thevolume.get(ObjectName.getKey()).getBlockMin();
@@ -250,7 +250,7 @@ public class timer
 							Vector3i HideMax = Max;
 							Vector3i Min2 = Min;
 							World world = Sponge.getServer().getWorld(Theworld.get(ObjectName.getKey()).toString()).get();
-							int Currentmove = TheCurrentlength.get(ObjectName.getKey());
+							int Currentmove = TheCurrentposition.get(ObjectName.getKey());
 							Vector3i hiding1 = new Vector3i(0, 0, 0);
 							Vector3i hiding2 = new Vector3i(0, 0, 0);
 							switch (Thedirection.get(ObjectName.getKey()).toString())
@@ -305,7 +305,8 @@ public class timer
 									break;
 							}
 							Currentmove--;
-							TheCurrentlength.replace(ObjectName.getKey(), Currentmove);
+							movingobject.plugin.Updatestats(Currentmove, "off", ObjectName.getKey());
+							TheCurrentposition.replace(ObjectName.getKey(), Currentmove);
 							if (Currentmove == 0)
 							{
 								Thestat.replace(ObjectName.getKey(), true, false);
@@ -314,7 +315,7 @@ public class timer
 							if (Currentmove < 0)
 							{
 								Currentmove = 0;
-								TheCurrentlength.replace(ObjectName.getKey(), Currentmove);
+								TheCurrentposition.replace(ObjectName.getKey(), Currentmove);
 								remove(ObjectName.getKey());
 								break;
 							}
@@ -402,7 +403,7 @@ public class timer
 	}
 	
 	//start animation (lever push) used also to init it
-	public static void start(String Name, int Duration, int Length, String Direction, String World, boolean Hide, Vector3i First, Vector3i Second)
+	public static void start(String Name, int Duration, int Length, String Direction, int Currentposition, String Currentstat, String World, boolean Hide, Vector3i First, Vector3i Second)
 	{
 		//first we store all values provided
 		if (Thedirection.get(Name) == null)
@@ -410,14 +411,52 @@ public class timer
 			Theduration.put(Name, Duration);
 			TheCurrentduration.put(Name, 1);
 			Thelength.put(Name, Length);
-			TheCurrentlength.put(Name, 0);
 			Thedirection.put(Name, Direction);
 			Theworld.put(Name, World);
 			Thehide.put(Name, Hide);
 			Thevector1.put(Name, First);
 			Thevector2.put(Name, Second);
-			Thestat.put(Name, false);
-			Theactivestat.put(Name, true);
+			if (Currentstat.equals("inactive"))
+			{
+				TheCurrentposition.put(Name, Currentposition);
+				Theactivestat.put(Name, true);
+				Thestat.put(Name, false);
+			}
+			else if (Currentstat.equals("on"))
+			{
+				TheCurrentposition.put(Name, Currentposition);
+				Theactivestat.put(Name, false);
+				Thestat.put(Name, true);
+				
+			}
+			else if (Currentstat.equals("off"))
+			{
+				TheCurrentposition.put(Name, Currentposition);
+				Theactivestat.put(Name, true);
+				Thestat.put(Name, false);
+			}
+			Vector3i pos = new Vector3i(0, 0, 0);
+			switch (Thedirection.get(Name))
+			{
+				case "up":
+					pos = new Vector3i(0, pos.getY()+Currentposition, 0);
+					break;
+				case "down":
+					pos = new Vector3i(0, pos.getY()-Currentposition, 0);
+					break;
+				case "north":
+					pos = new Vector3i(0, 0, pos.getZ()-Currentposition);
+					break;
+				case "south":
+					pos = new Vector3i(0, 0, pos.getZ()+Currentposition);
+					break;
+				case "east":
+					pos = new Vector3i(pos.getX()+Currentposition, 0, 0);
+					break;
+				case "west":
+					pos = new Vector3i(pos.getX()-Currentposition, 0, 0);
+					break;
+			}
 			//here we copy the blocks from the world to the backup volume
 			MutableBlockVolume volume = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(First, Second));
 			World world = Sponge.getServer().getWorld(World).get();
@@ -431,7 +470,7 @@ public class timer
 				{
 					for (int z = min.getZ(); z <= max.getZ(); z++) 
 					{
-						volume.setBlock(x, y, z, world.getBlock(x+Min2.getX(), y+Min2.getY(), z+Min2.getZ()));
+						volume.setBlock(x, y, z, world.getBlock(x+Min2.getX()+pos.getX(), y+Min2.getY()+pos.getY(), z+Min2.getZ()+pos.getZ()));
 					}
 				}
 			}
@@ -464,12 +503,13 @@ public class timer
 	//when the object return to the first position, we delete it
 	private static void remove(String Name)
 	{
+		movingobject.plugin.Updatestats(0, "inactive", Name);
 		if (Thedirection.get(Name) != null)
 		{
 			Theduration.remove(Name);
 			Thedirection.remove(Name);
 			TheCurrentduration.remove(Name);
-			TheCurrentlength.remove(Name);
+			TheCurrentposition.remove(Name);
 			Thestat.remove(Name);
 			Theworld.remove(Name);
 			Thelength.remove(Name);

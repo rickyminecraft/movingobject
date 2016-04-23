@@ -245,4 +245,11 @@ public class movingobject
 	{
 		return this.config.getNode("tool").getString();
 	}
+	
+	public void Updatestats(int Currentposition, String Currentstat, String Name)
+	{
+		this.config.getNode("objectName", Name, "currentposition").setValue(Currentposition);
+        this.config.getNode("objectName", Name, "currentstat").setValue(Currentstat);
+        save();
+	}
 }

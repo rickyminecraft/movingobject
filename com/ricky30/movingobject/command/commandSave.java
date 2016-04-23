@@ -51,6 +51,8 @@ public class commandSave implements CommandExecutor
 	        this.config.getNode("objectName", Name, "movingtime").setValue(1);
 	        this.config.getNode("objectName", Name, "direction").setValue("up");
 	        this.config.getNode("objectName", Name, "length").setValue(Objectsize.getY());
+	        this.config.getNode("objectName", Name, "currentposition").setValue(0);
+	        this.config.getNode("objectName", Name, "currentstat").setValue("inactive");
 	        this.config.getNode("objectName", Name, "hide").setValue("false");
 	        this.config.getNode("objectName", Name, "owner").setValue(player.getUniqueId().toString());
 			movingobject.plugin.save();

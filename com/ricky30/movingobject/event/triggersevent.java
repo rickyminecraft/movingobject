@@ -34,7 +34,7 @@ public class triggersevent
 			//converted to vector
 			Vector3i trigger = new Vector3i(TX, TY, TZ);
 
-			//get the world of this mine
+			//get the world of this object
 			String World = this.config.getNode("objectName", text.toString(), "world").getString();
 
 			if (Eventworld.equals(World))
@@ -43,8 +43,8 @@ public class triggersevent
 				{
 					//if we are here then a trigger was activated
 					//
-					int X1, X2, Y1, Y2, Z1, Z2, duration, length;
-					String direction;
+					int X1, X2, Y1, Y2, Z1, Z2, duration, length, currentposition;
+					String direction, currentstat;
 					boolean hide;
 					X1 = this.config.getNode("objectName", text.toString(), "depart_X").getInt();
 					Y1 = this.config.getNode("objectName", text.toString(), "depart_Y").getInt();
@@ -57,8 +57,10 @@ public class triggersevent
 					duration = this.config.getNode("objectName", text.toString(), "movingtime").getInt();
 					direction = this.config.getNode("objectName", text.toString(), "direction").getString();
 					length = this.config.getNode("objectName", text.toString(), "length").getInt();
+					currentposition = this.config.getNode("objectName", text.toString(), "currentposition").getInt();
+					currentstat = this.config.getNode("objectName", text.toString(), "currentstat").getString();
 					hide = this.config.getNode("objectName", text.toString(), "hide").getBoolean();
-					timer.start(text.toString(), duration, length, direction, World, hide, first, second);
+					timer.start(text.toString(), duration, length, direction, currentposition, currentstat, World, hide, first, second);
 				}
 			}
 		}
@@ -97,8 +99,8 @@ public class triggersevent
 						if (!Activated)
 						{
 							//if we are here then a trigger was activated
-							int X1, X2, Y1, Y2, Z1, Z2, duration, length;
-							String direction;
+							int X1, X2, Y1, Y2, Z1, Z2, duration, length, currentposition;
+							String direction, currentstat;
 							boolean hide;
 							X1 = this.config.getNode("objectName", text.toString(), "depart_X").getInt();
 							Y1 = this.config.getNode("objectName", text.toString(), "depart_Y").getInt();
@@ -111,8 +113,10 @@ public class triggersevent
 							duration = this.config.getNode("objectName", text.toString(), "movingtime").getInt();
 							direction = this.config.getNode("objectName", text.toString(), "direction").getString();
 							length = this.config.getNode("objectName", text.toString(), "length").getInt();
+							currentposition = this.config.getNode("objectName", text.toString(), "currentposition").getInt();
+							currentstat = this.config.getNode("objectName", text.toString(), "currentstat").getString();
 							hide = this.config.getNode("objectName", text.toString(), "hide").getBoolean();
-							timer.start(text.toString(), duration, length, direction, World, hide, first, second);
+							timer.start(text.toString(), duration, length, direction, currentposition, currentstat, World, hide, first, second);
 							Activated = true;
 						}
 					}
