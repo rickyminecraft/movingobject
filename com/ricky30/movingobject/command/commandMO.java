@@ -13,11 +13,12 @@ public class commandMO implements CommandExecutor
 	public CommandResult execute(CommandSource src, CommandContext args)
 			throws CommandException
 	{
-		src.sendMessage(Text.of("movingobject plugin"));
+		src.sendMessage(Text.of("Movingobject plugin"));
 		src.sendMessage(Text.of("Usage:"));
 		src.sendMessage(Text.of("/mo define"));
 		src.sendMessage(Text.of("/mo reload"));
 		src.sendMessage(Text.of("/mo list"));
+		src.sendMessage(Text.of("/mo changetool"));
 		src.sendMessage(Text.of("/mo save NAME"));
 		src.sendMessage(Text.of("/mo delete NAME"));
 		src.sendMessage(Text.of("/mo direction NAME direction"));

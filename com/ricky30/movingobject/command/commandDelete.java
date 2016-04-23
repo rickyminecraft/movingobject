@@ -36,7 +36,7 @@ public class commandDelete implements CommandExecutor
 			}
 			else
 			{
-				src.sendMessage(Text.of("you're not the owner of this object"));
+				src.sendMessage(Text.of("You're not the owner of this object"));
 			}
 		}
 		src.sendMessage(Text.of("Object " , Name, " not found"));

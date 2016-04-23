@@ -25,7 +25,7 @@ public class commandHide implements CommandExecutor
 		String Hide = args.<String>getOne("hide").get();
 		if (!Hide.equals("true") && !Hide.equals("false"))
 		{
-			src.sendMessage(Text.of("value must be true or false"));
+			src.sendMessage(Text.of("Value must be true or false"));
 			return CommandResult.empty();
 		}
 		Player player = (Player) src;
@@ -42,7 +42,7 @@ public class commandHide implements CommandExecutor
 			}
 			else
 			{
-				src.sendMessage(Text.of("you're not the owner of this object"));
+				src.sendMessage(Text.of("You're not the owner of this object"));
 			}
 		}
 		return CommandResult.empty();

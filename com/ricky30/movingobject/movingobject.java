@@ -24,6 +24,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.extent.ExtentBufferFactory;
 
 import com.google.inject.Inject;
+import com.ricky30.movingobject.command.commandChangetool;
 import com.ricky30.movingobject.command.commandDefine;
 import com.ricky30.movingobject.command.commandDelete;
 import com.ricky30.movingobject.command.commandDirection;
@@ -133,6 +134,11 @@ public class movingobject
 				.description(Text.of("allow use of stick to define movingobject"))
 				.permission("movingobject.define")
 				.executor(new commandDefine())
+				.build());
+		subcommands.put(Arrays.asList("changetool"), CommandSpec.builder()
+				.description(Text.of("change tool used to define a MO"))
+				.permission("movingobject.changetool")
+				.executor(new commandChangetool())
 				.build());
 		subcommands.put(Arrays.asList("list"), CommandSpec.builder()
 				.description(Text.of("list all movingobject"))

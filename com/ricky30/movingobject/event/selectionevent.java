@@ -67,7 +67,7 @@ public class selectionevent
 						trigger = Event.getTargetBlock().getPosition();
 						triggerselect = true;
 						isready = true;
-						player.getCommandSource().get().sendMessage(Text.of("ok now ready to save"));
+						player.getCommandSource().get().sendMessage(Text.of("Ok now ready to save"));
 					}
 				}
 			}

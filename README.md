@@ -2,34 +2,36 @@
 
 A sponge plugin allowing named zone to move in a defined direction using any block / item
 
-When you define a MO you select a block/item who act as a trigger, you also can use redstone. Then you it the trigger with right click or active redstone circuit to active the MO.
+When you define a MO you select a block/item who act as a trigger, you also can use redstone. Then you hit the trigger with right click or active redstone circuit to active the MO.
 
 #usage
 ```
-use /mo to get a list of commands
+/mo get a list of commands
 
-use /mo define to start create a movingobject with a stick
+/mo define start create a movingobject with a stick
 
-use /mo save <object name> to save defined movingobject
+/mo save <object name> save defined movingobject
 
-use /mo reload to reload config file
+/mo reload reload config file
 
-use /mo list to get a list of defined movingobject
+/mo list get a list of defined movingobject
 
-use /mo delete <object name> to delete named movingobject
+/mo delete <object name> delete named movingobject
 
-use /mo time <object name> <duration> to change time in seconds between to move
+/mo time <object name> <duration> change time in seconds between to move
 default: 1
 
-use /mo length <object name> <length> to change displacement length
+/mo length <object name> <length> change displacement length
 default: the length of the object (height)
 
-use /mo direction <object name> <direction> to change displacement direction
+/mo direction <object name> <direction> change displacement direction
 direction is: up down north south east west
 default: up.
 
-use /mo hide <object name> <true/false> to hide or not the object when it move
+/mo hide <object name> <true/false> hide or not the object when it move
 default: false
+
+/mo changetool change tool used to define a MO
 
 right click the block/item to make it move and again to make it return to it's initial position
 ```
@@ -45,4 +47,5 @@ movingobject.time
 movingobject.length
 movingobject.list
 movingobject.define
+movingobject.changetool
 ```
