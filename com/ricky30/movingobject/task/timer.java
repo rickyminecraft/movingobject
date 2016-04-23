@@ -437,10 +437,19 @@ public class timer
 			}
 			Thevolume.put(Name, volume);
 		}
-		else
+		else //do a switch
 		{
 			//but if this is the second time then we change moving direction
-			stop(Name);
+			if (Theactivestat.get(Name).booleanValue())
+			{
+				stop(Name);
+			}
+			else
+			{
+				Theactivestat.replace(Name, true);
+				//if we don't do this we got an unexpected behavior
+				Thestat.replace(Name, false);
+			}
 		}
 	}
 	

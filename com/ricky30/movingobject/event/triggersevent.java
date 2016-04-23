@@ -69,6 +69,7 @@ public class triggersevent
 	{
 		String Eventworld = player.getWorld().getName();
 		this.config = movingobject.plugin.getConfig();
+		boolean Activated = false;
 		for ( Transaction<BlockSnapshot> Block :event.getTransactions())
 		{
 			Vector3i BlockPos = Block.getDefault().getPosition();
@@ -85,30 +86,35 @@ public class triggersevent
 				//converted to vector
 				Vector3i trigger = new Vector3i(TX, TY, TZ);
 
-				//get the world of this mine
+				//get the world of this object
 				String World = this.config.getNode("objectName", text.toString(), "world").getString();
 
 				if (Eventworld.equals(World))
 				{
 					if (BlockPos.compareTo(trigger) == 0)
 					{
-						//if we are here then a trigger was activated
-						int X1, X2, Y1, Y2, Z1, Z2, duration, length;
-						String direction;
-						boolean hide;
-						X1 = this.config.getNode("objectName", text.toString(), "depart_X").getInt();
-						Y1 = this.config.getNode("objectName", text.toString(), "depart_Y").getInt();
-						Z1 = this.config.getNode("objectName", text.toString(), "depart_Z").getInt();
-						X2 = this.config.getNode("objectName", text.toString(), "fin_X").getInt();
-						Y2 = this.config.getNode("objectName", text.toString(), "fin_Y").getInt();
-						Z2 = this.config.getNode("objectName", text.toString(), "fin_Z").getInt();
-						Vector3i first = new Vector3i(X1, Y1, Z1);
-						Vector3i second = new Vector3i(X2, Y2, Z2);
-						duration = this.config.getNode("objectName", text.toString(), "movingtime").getInt();
-						direction = this.config.getNode("objectName", text.toString(), "direction").getString();
-						length = this.config.getNode("objectName", text.toString(), "length").getInt();
-						hide = this.config.getNode("objectName", text.toString(), "hide").getBoolean();
-						timer.start(text.toString(), duration, length, direction, World, hide, first, second);
+						//need to do this because of stupid redstone
+						if (!Activated)
+						{
+							//if we are here then a trigger was activated
+							int X1, X2, Y1, Y2, Z1, Z2, duration, length;
+							String direction;
+							boolean hide;
+							X1 = this.config.getNode("objectName", text.toString(), "depart_X").getInt();
+							Y1 = this.config.getNode("objectName", text.toString(), "depart_Y").getInt();
+							Z1 = this.config.getNode("objectName", text.toString(), "depart_Z").getInt();
+							X2 = this.config.getNode("objectName", text.toString(), "fin_X").getInt();
+							Y2 = this.config.getNode("objectName", text.toString(), "fin_Y").getInt();
+							Z2 = this.config.getNode("objectName", text.toString(), "fin_Z").getInt();
+							Vector3i first = new Vector3i(X1, Y1, Z1);
+							Vector3i second = new Vector3i(X2, Y2, Z2);
+							duration = this.config.getNode("objectName", text.toString(), "movingtime").getInt();
+							direction = this.config.getNode("objectName", text.toString(), "direction").getString();
+							length = this.config.getNode("objectName", text.toString(), "length").getInt();
+							hide = this.config.getNode("objectName", text.toString(), "hide").getBoolean();
+							timer.start(text.toString(), duration, length, direction, World, hide, first, second);
+							Activated = true;
+						}
 					}
 				}
 			}

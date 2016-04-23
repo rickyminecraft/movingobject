@@ -42,7 +42,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.0r")
+@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.0.1r")
 public class movingobject
 {
 	public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;
