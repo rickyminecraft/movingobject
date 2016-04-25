@@ -3,16 +3,19 @@ package com.ricky30.movingobject;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.api.data.DataContainer;
+import org.spongepowered.api.data.translator.ConfigurateTranslator;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
@@ -22,7 +25,9 @@ import org.spongepowered.api.scheduler.Scheduler;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.world.extent.ExtentBufferFactory;
+import org.spongepowered.api.world.extent.MutableBlockVolume;
 
+import com.flowpowered.math.vector.Vector3i;
 import com.google.inject.Inject;
 import com.ricky30.movingobject.command.commandChangetool;
 import com.ricky30.movingobject.command.commandDefine;
@@ -38,11 +43,13 @@ import com.ricky30.movingobject.command.commandTime;
 import com.ricky30.movingobject.event.selectionevent;
 import com.ricky30.movingobject.event.triggersevent;
 import com.ricky30.movingobject.task.timer;
+import com.ricky30.movingobject.utility.size;
+
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.1")
+@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.1.1")
 public class movingobject
 {
 	public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;
@@ -122,6 +129,7 @@ public class movingobject
 		
 		task = movingobject.plugin.getTaskbuilder().execute(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				timer.run();
@@ -251,5 +259,70 @@ public class movingobject
 		this.config.getNode("objectName", Name, "currentposition").setValue(Currentposition);
         this.config.getNode("objectName", Name, "currentstat").setValue(Currentstat);
         save();
+	}
+	
+	public void Storevolume(MutableBlockVolume volume, String Name)
+	{
+		List<BlockState> Blocksmeta = new ArrayList<BlockState>(); 
+		final Vector3i min = volume.getBlockMin();
+		final Vector3i max = volume.getBlockMax();
+		for (int x = min.getX(); x <= max.getX(); x++) 
+		{
+			for (int y = min.getY(); y <= max.getY(); y++) 
+			{
+				for (int z = min.getZ(); z <= max.getZ(); z++) 
+				{
+					Blocksmeta.add(volume.getBlock(x, y, z));
+				}
+			}
+		}
+
+		int Number = 0;
+		for (BlockState blockstate: Blocksmeta)
+		{
+			this.config.getNode("objectName", Name, "volume", Number, "BlockState").setValue(blockstate.toString());
+			Number++;
+		}
+	}
+	
+	public MutableBlockVolume Getvolume (String Name)
+	{
+		int X1, X2, Y1, Y2, Z1, Z2;
+		X1 = this.config.getNode("objectName", Name, "depart_X").getInt();
+		Y1 = this.config.getNode("objectName", Name, "depart_Y").getInt();
+		Z1 = this.config.getNode("objectName", Name, "depart_Z").getInt();
+		X2 = this.config.getNode("objectName", Name, "fin_X").getInt();
+		Y2 = this.config.getNode("objectName", Name, "fin_Y").getInt();
+		Z2 = this.config.getNode("objectName", Name, "fin_Z").getInt();
+		Vector3i First = new Vector3i(X1, Y1, Z1);
+		Vector3i Second = new Vector3i(X2, Y2, Z2);
+		MutableBlockVolume volume  = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(First, Second));
+		final Vector3i min = volume.getBlockMin();
+		final Vector3i max = volume.getBlockMax();
+		
+		int Length = volume.getBlockSize().getX() * volume.getBlockSize().getY() * volume.getBlockSize().getZ();
+		List<DataContainer> Blocksmeta = new ArrayList<DataContainer>(); 
+		ConfigurateTranslator  tr = ConfigurateTranslator.instance();
+		for (int index = 0; index < Length; index++)
+		{
+			ConfigurationNode node = this.config.getNode("objectName", Name, "volume", index);
+			Blocksmeta.add(tr.translateFrom(node));
+		}
+
+		int index = 0;
+		for (int x = min.getX(); x <= max.getX(); x++) 
+		{
+			for (int y = min.getY(); y <= max.getY(); y++) 
+			{
+				for (int z = min.getZ(); z <= max.getZ(); z++) 
+				{
+					DataContainer cont = Blocksmeta.get(index);
+					BlockState state = BlockState.builder().build(cont).get();
+					volume.setBlock(x, y, z, state);
+					index++;
+				}
+			}
+		}
+		return volume;
 	}
 }

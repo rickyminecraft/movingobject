@@ -18,6 +18,7 @@ public class commandTime implements CommandExecutor
 {
 	private ConfigurationNode config = null;
 
+	@Override
 	public CommandResult execute(CommandSource src, CommandContext args)
 			throws CommandException
 	{

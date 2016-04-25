@@ -474,6 +474,15 @@ public class timer
 					}
 				}
 			}
+			if (Currentstat.equals("inactive") & Hide)
+			{
+				movingobject.plugin.Storevolume(volume, Name);
+			}
+			if (Currentstat.equals("on") & Hide)
+			{
+				volume = movingobject.plugin.Getvolume(Name);
+			}
+			
 			Thevolume.put(Name, volume);
 		}
 		else //do a switch

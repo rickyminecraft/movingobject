@@ -12,6 +12,7 @@ import com.ricky30.movingobject.event.selectionevent;
 public class commandDefine implements CommandExecutor
 {
 
+	@Override
 	public CommandResult execute(CommandSource src, CommandContext args)
 			throws CommandException
 	{
