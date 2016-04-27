@@ -1,5 +1,8 @@
 package com.ricky30.movingobject.event;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -11,23 +14,23 @@ import com.ricky30.movingobject.movingobject;
 
 public class selectionevent
 {
-	public static boolean isActive = false;
-	private static boolean primaryUsed = false;
-	private static boolean secondaryUsed = false;
-	private static boolean triggerselect = false;
-	private static boolean isready = false;
-	private static Vector3i first;
-	private static Vector3i second;
-	private static Vector3i trigger;
+	public static Map<String, Boolean> isActive = new HashMap<String, Boolean>();
+	private static Map<String, Boolean> primaryUsed = new HashMap<String, Boolean>();
+	private static Map<String, Boolean> secondaryUsed = new HashMap<String, Boolean>();
+	private static Map<String, Boolean> triggerselect = new HashMap<String, Boolean>();
+	private static Map<String, Boolean> isready = new HashMap<String, Boolean>();
+	private static Map<String, Vector3i> first = new HashMap<String, Vector3i>();
+	private static Map<String, Vector3i> second = new HashMap<String, Vector3i>();
+	private static Map<String, Vector3i> trigger = new HashMap<String, Vector3i>();
 	
 	@Listener
 	public void oninteractblockPrimary(ChangeBlockEvent.Break Event, @First Player player)
 	{
-		if (isActive)
+		if (isActive.get(player.getUniqueId()).booleanValue())
 		{
-			if (triggerselect)
+			if (triggerselect.get(player.getUniqueId()).booleanValue())
 			{
-				isActive = false;
+				isActive.put(player.getUniqueId().toString(), false);
 			}
 			if (player.getItemInHand().isPresent())
 			{
@@ -42,31 +45,30 @@ public class selectionevent
 	@Listener
 	public void oninteractblockPrimary(InteractBlockEvent.Primary Event, @First Player player)
 	{
-		if (isActive)
+		if (isActive.get(player.getUniqueId()).booleanValue())
 		{
 			if (player.getItemInHand().isPresent())
 			{
 				if (player.getItemInHand().get().getItem().getId().equals(movingobject.plugin.GetTool()))
 				{
-					if (!primaryUsed)
+					if (!primaryUsed.get(player.getUniqueId().toString()).booleanValue())
 					{
-						first = Event.getTargetBlock().getPosition();
-						primaryUsed = true;
+						first.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
+						primaryUsed.put(player.getUniqueId().toString(), true);
 						player.getCommandSource().get().sendMessage(Text.of("First point defined"));
-						
 					}
-					else if (!secondaryUsed)
+					else if (!secondaryUsed.get(player.getUniqueId().toString()).booleanValue())
 					{
-						second = Event.getTargetBlock().getPosition();
-						secondaryUsed = true;
+						second.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
+						secondaryUsed.put(player.getUniqueId().toString(), true);
 						player.getCommandSource().get().sendMessage(Text.of("Second point defined"));
 						player.getCommandSource().get().sendMessage(Text.of("Now select the trigger block/item"));
 					}
-					else if (!triggerselect)
+					else if (!triggerselect.get(player.getUniqueId().toString()).booleanValue())
 					{
-						trigger = Event.getTargetBlock().getPosition();
-						triggerselect = true;
-						isready = true;
+						trigger.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
+						triggerselect.put(player.getUniqueId().toString(), true);
+						isready.put(player.getUniqueId().toString(), true);
 						player.getCommandSource().get().sendMessage(Text.of("Ok now ready to save"));
 					}
 				}
@@ -74,32 +76,54 @@ public class selectionevent
 		}
 	}
 	
-	public static Vector3i getFirst()
+	public static Vector3i getFirst(Player player)
 	{
-		return first;
+		return first.get(player.getUniqueId().toString());
 	}
 	
-	public static Vector3i getSecond()
+	public static Vector3i getSecond(Player player)
 	{
-		return second;
+		return second.get(player.getUniqueId().toString());
 	}
 	
-	public static Vector3i getTrigger()
+	public static Vector3i getTrigger(Player player)
 	{
-		return trigger;
+		return trigger.get(player.getUniqueId().toString());
 	}
 	
-	public static boolean IsreadytoSave()
+	public static boolean IsreadytoSave(Player player)
 	{
-		return isready;
+		return isready.get(player.getUniqueId().toString());
 	}
 	
-	public static void Reset()
+	public static void Reset(Player player)
 	{
-		primaryUsed = false;
-		secondaryUsed = false;
-		triggerselect = false;
-		isready = false;
-		isActive = true;
+		//in case we defined wrongly, and choose to redo the define command , we try to remove every value (set or not)
+		isready.remove(player.getUniqueId().toString());
+		primaryUsed.remove(player.getUniqueId().toString());
+		secondaryUsed.remove(player.getUniqueId().toString());
+		triggerselect.remove(player.getUniqueId().toString());
+		isActive.remove(player.getUniqueId().toString());
+		first.remove(player.getUniqueId().toString());
+		second.remove(player.getUniqueId().toString());
+		trigger.remove(player.getUniqueId().toString());
+		
+		isready.put(player.getUniqueId().toString(), false);
+		primaryUsed.put(player.getUniqueId().toString(), false);
+		secondaryUsed.put(player.getUniqueId().toString(), false);
+		triggerselect.put(player.getUniqueId().toString(), false);
+		isActive.put(player.getUniqueId().toString(), true);
+	}
+	
+	public static void Clear(Player player)
+	{
+		isready.remove(player.getUniqueId().toString());
+		primaryUsed.remove(player.getUniqueId().toString());
+		secondaryUsed.remove(player.getUniqueId().toString());
+		triggerselect.remove(player.getUniqueId().toString());
+		isActive.remove(player.getUniqueId().toString());
+		first.remove(player.getUniqueId().toString());
+		second.remove(player.getUniqueId().toString());
+		trigger.remove(player.getUniqueId().toString());
 	}
 }

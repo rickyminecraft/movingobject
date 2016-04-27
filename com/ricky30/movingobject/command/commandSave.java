@@ -32,11 +32,11 @@ public class commandSave implements CommandExecutor
 			src.sendMessage(Text.of("Object ", Name, " already saved. change name."));
 			return CommandResult.empty();
 		}
-		if (selectionevent.IsreadytoSave())
+		if (selectionevent.IsreadytoSave(player))
 		{
-	        Vector3i positiondepart = selectionevent.getFirst();
-	        Vector3i positionfin = selectionevent.getSecond();
-	        Vector3i trigger = selectionevent.getTrigger();
+	        Vector3i positiondepart = selectionevent.getFirst(player);
+	        Vector3i positionfin = selectionevent.getSecond(player);
+	        Vector3i trigger = selectionevent.getTrigger(player);
 	        Vector3i Objectsize = size.length(positiondepart, positionfin);
 	        this.config.getNode("objectName", Name).setValue("");
 	        this.config.getNode("objectName", Name, "world").setValue(world);
@@ -57,6 +57,7 @@ public class commandSave implements CommandExecutor
 	        this.config.getNode("objectName", Name, "hide").setValue("false");
 	        this.config.getNode("objectName", Name, "owner").setValue(player.getUniqueId().toString());
 			movingobject.plugin.save();
+			selectionevent.Clear(player);
 			src.sendMessage(Text.of("Object " , Name, " saved"));
 			return CommandResult.success();
 		}
