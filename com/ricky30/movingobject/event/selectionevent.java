@@ -26,17 +26,20 @@ public class selectionevent
 	@Listener
 	public void oninteractblockPrimary(ChangeBlockEvent.Break Event, @First Player player)
 	{
-		if (isActive.get(player.getUniqueId().toString()).booleanValue())
+		if (!isActive.isEmpty())
 		{
-			if (triggerselect.get(player.getUniqueId().toString()).booleanValue())
+			if (isActive.get(player.getUniqueId().toString()).booleanValue())
 			{
-				isActive.put(player.getUniqueId().toString(), false);
-			}
-			if (player.getItemInHand().isPresent())
-			{
-				if (player.getItemInHand().get().getItem().getId().equals(movingobject.plugin.GetTool()))
+				if (triggerselect.get(player.getUniqueId().toString()).booleanValue())
 				{
-					Event.setCancelled(true);
+					isActive.put(player.getUniqueId().toString(), false);
+				}
+				if (player.getItemInHand().isPresent())
+				{
+					if (player.getItemInHand().get().getItem().getId().equals(movingobject.plugin.GetTool()))
+					{
+						Event.setCancelled(true);
+					}
 				}
 			}
 		}
@@ -45,31 +48,34 @@ public class selectionevent
 	@Listener
 	public void oninteractblockPrimary(InteractBlockEvent.Primary Event, @First Player player)
 	{
-		if (isActive.get(player.getUniqueId().toString()).booleanValue())
+		if (!isActive.isEmpty())
 		{
-			if (player.getItemInHand().isPresent())
+			if (isActive.get(player.getUniqueId().toString()).booleanValue())
 			{
-				if (player.getItemInHand().get().getItem().getId().equals(movingobject.plugin.GetTool()))
+				if (player.getItemInHand().isPresent())
 				{
-					if (!primaryUsed.get(player.getUniqueId().toString()).booleanValue())
+					if (player.getItemInHand().get().getItem().getId().equals(movingobject.plugin.GetTool()))
 					{
-						first.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
-						primaryUsed.put(player.getUniqueId().toString(), true);
-						player.getCommandSource().get().sendMessage(Text.of("First point defined"));
-					}
-					else if (!secondaryUsed.get(player.getUniqueId().toString()).booleanValue())
-					{
-						second.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
-						secondaryUsed.put(player.getUniqueId().toString(), true);
-						player.getCommandSource().get().sendMessage(Text.of("Second point defined"));
-						player.getCommandSource().get().sendMessage(Text.of("Now select the trigger block/item"));
-					}
-					else if (!triggerselect.get(player.getUniqueId().toString()).booleanValue())
-					{
-						trigger.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
-						triggerselect.put(player.getUniqueId().toString(), true);
-						isready.put(player.getUniqueId().toString(), true);
-						player.getCommandSource().get().sendMessage(Text.of("Ok now ready to save"));
+						if (!primaryUsed.get(player.getUniqueId().toString()).booleanValue())
+						{
+							first.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
+							primaryUsed.put(player.getUniqueId().toString(), true);
+							player.getCommandSource().get().sendMessage(Text.of("First point defined"));
+						}
+						else if (!secondaryUsed.get(player.getUniqueId().toString()).booleanValue())
+						{
+							second.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
+							secondaryUsed.put(player.getUniqueId().toString(), true);
+							player.getCommandSource().get().sendMessage(Text.of("Second point defined"));
+							player.getCommandSource().get().sendMessage(Text.of("Now select the trigger block/item"));
+						}
+						else if (!triggerselect.get(player.getUniqueId().toString()).booleanValue())
+						{
+							trigger.put(player.getUniqueId().toString(), Event.getTargetBlock().getPosition());
+							triggerselect.put(player.getUniqueId().toString(), true);
+							isready.put(player.getUniqueId().toString(), true);
+							player.getCommandSource().get().sendMessage(Text.of("Ok now ready to save"));
+						}
 					}
 				}
 			}
