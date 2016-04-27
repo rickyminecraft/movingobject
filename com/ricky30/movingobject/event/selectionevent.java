@@ -26,9 +26,9 @@ public class selectionevent
 	@Listener
 	public void oninteractblockPrimary(ChangeBlockEvent.Break Event, @First Player player)
 	{
-		if (isActive.get(player.getUniqueId()).booleanValue())
+		if (isActive.get(player.getUniqueId().toString()).booleanValue())
 		{
-			if (triggerselect.get(player.getUniqueId()).booleanValue())
+			if (triggerselect.get(player.getUniqueId().toString()).booleanValue())
 			{
 				isActive.put(player.getUniqueId().toString(), false);
 			}
@@ -45,7 +45,7 @@ public class selectionevent
 	@Listener
 	public void oninteractblockPrimary(InteractBlockEvent.Primary Event, @First Player player)
 	{
-		if (isActive.get(player.getUniqueId()).booleanValue())
+		if (isActive.get(player.getUniqueId().toString()).booleanValue())
 		{
 			if (player.getItemInHand().isPresent())
 			{
