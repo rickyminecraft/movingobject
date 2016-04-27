@@ -9,9 +9,10 @@ import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.MutableBlockVolume;
-
+import org.spongepowered.api.world.extent.worker.MutableBlockVolumeWorker;
 import com.flowpowered.math.vector.Vector3i;
 import com.ricky30.movingobject.movingobject;
+import com.ricky30.movingobject.utility.Merger;
 import com.ricky30.movingobject.utility.size;
 
 public class timer
@@ -40,8 +41,8 @@ public class timer
 	static Map<String, Boolean> Theactivestat = new HashMap<String, Boolean>();
 	//stored volume in case of hiding
 	static Map<String, MutableBlockVolume> Thevolume = new HashMap<String, MutableBlockVolume>();
-	
-	
+
+
 	public static void run() 
 	{
 		//if this is empty then there is nothing to do
@@ -49,24 +50,25 @@ public class timer
 		{
 			for (Entry<String, String> ObjectName: Thedirection.entrySet()) 
 			{
-				if (Theactivestat.get(ObjectName.getKey()).booleanValue())
+				String Name = ObjectName.getKey();
+				if (Theactivestat.get(Name).booleanValue())
 				{
 					//if false then we can move
-					if (!Thestat.get(ObjectName.getKey()).booleanValue())
+					if (!Thestat.get(Name).booleanValue())
 					{
 						//timing is used here
-						if (TheCurrentduration.get(ObjectName.getKey()).intValue() < Theduration.get(ObjectName.getKey()).intValue())
+						if (TheCurrentduration.get(Name).intValue() < Theduration.get(Name).intValue())
 						{
-							int currentDuration = TheCurrentduration.get(ObjectName.getKey()).intValue();
-							TheCurrentduration.replace(ObjectName.getKey(), ++currentDuration);
+							int currentDuration = TheCurrentduration.get(Name).intValue();
+							TheCurrentduration.replace(Name, ++currentDuration);
 						}
 						else
 						{
 							//we reset it to 1;
-							TheCurrentduration.replace(ObjectName.getKey(), 1);
+							TheCurrentduration.replace(Name, 1);
 							//we get the two vector of our object
-							Vector3i A = Thevector1.get(ObjectName.getKey());
-							Vector3i B = Thevector2.get(ObjectName.getKey());
+							Vector3i A = Thevector1.get(Name);
+							Vector3i B = Thevector2.get(Name);
 							//we get the min and max out of them
 							Vector3i Min = size.Min(A, B);
 							Vector3i Max = size.Max(A, B);
@@ -74,17 +76,19 @@ public class timer
 							Vector3i HideMax = Max;
 							//min2 is the same as min but without 1 added
 							Vector3i Min2 = Min;
-							//we get the world where the object is
-							World world = Sponge.getServer().getWorld(Theworld.get(ObjectName.getKey()).toString()).get();
-							//we get the current displacement
-							int Currentmove = TheCurrentposition.get(ObjectName.getKey());
 							Vector3i hiding1 = new Vector3i(0, 0, 0);
 							Vector3i hiding2 = new Vector3i(0, 0, 0);
+							Vector3i min = Thevolume.get(Name).getBlockMin();
+							Vector3i max = Thevolume.get(Name).getBlockMax();
+							//we get the world where the object is
+							World world = Sponge.getServer().getWorld(Theworld.get(Name).toString()).get();
+							//we get the current displacement
+							int Currentmove = TheCurrentposition.get(Name);
 							//switch depending on direction
 							//we add or substract one on x, y or z
 							//then we add or substract the currentmove (0, 1, 2, ...)
 							//the same goes for min2 except we only adding currentmove
-							switch (Thedirection.get(ObjectName.getKey()).toString())
+							switch (Thedirection.get(Name).toString())
 							{
 								case "up":
 									Min = new Vector3i(Min.getX(), Min.getY()+1, Min.getZ());
@@ -137,45 +141,120 @@ public class timer
 							}
 							//then we add 1 to currentmove
 							Currentmove++;
-							movingobject.plugin.Updatestats(Currentmove, "on", ObjectName.getKey());
+							movingobject.plugin.Updatestats(Currentmove, "on", Name);
 							//and we update the displacement stat
-							TheCurrentposition.replace(ObjectName.getKey(), Currentmove);
+							TheCurrentposition.replace(Name, Currentmove);
 							//if we get at the end then next time we don't move
-							if (Currentmove == Thelength.get(ObjectName.getKey()).intValue())
+							if (Currentmove == Thelength.get(Name).intValue())
 							{
-								Thestat.replace(ObjectName.getKey(), false, true);
+								Thestat.replace(Name, false, true);
 							}
 							//this is to prevent misuse of redstone circuits
-							if (Currentmove > Thelength.get(ObjectName.getKey()).intValue())
+							if (Currentmove > Thelength.get(Name).intValue())
 							{
-								Currentmove = Thelength.get(ObjectName.getKey()).intValue();
-								TheCurrentposition.replace(ObjectName.getKey(), Currentmove);
+								TheCurrentposition.replace(Name, Thelength.get(Name).intValue());
 								break;
 							}
-							final Vector3i min = Thevolume.get(ObjectName.getKey()).getBlockMin();
-							final Vector3i max = Thevolume.get(ObjectName.getKey()).getBlockMax();
-							
 							//here goes the hiding
 							int hiding = 0; //not hiding
-							if (Thehide.get(ObjectName.getKey()).booleanValue())
+							if (Thehide.get(Name).booleanValue())
 							{
 								hiding++;
 							}
-							
+							BlockState state_AIR = BlockTypes.AIR.getDefaultState();
 							switch (hiding)
 							{
 								//not hiding
 								case 0:
-									//and we fill the current block space with air
-									for (int x = min.getX(); x <= max.getX(); x++) 
+									//we must fill only the needed blocks not more not less
+//									MutableBlockVolume volume1;
+//									MutableBlockVolume volume2;
+//									MutableBlockVolumeWorker<?> mutable;
+//									Vector3i newPos;
+									switch (Thedirection.get(Name).toString())
 									{
-										for (int y = min.getY(); y <= max.getY(); y++) 
-										{
-											for (int z = min.getZ(); z <= max.getZ(); z++) 
+										case "up"://+y
+//											volume1 = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(min.getX(), min.getY(), min.getZ(), max.getX(), min.getY(), max.getZ()));
+//											mutable = volume1.getBlockWorker();
+//											Filler fill = new Filler();
+//											mutable.fill(fill);
+											for (int x = min.getX(); x <= max.getX(); x++) 
 											{
-												world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, BlockTypes.AIR.getDefaultState());
+												for (int y = min.getY(); y <= min.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+														//volume1.setBlock(x, y, z, state_AIR);
+													}
+												}
 											}
-										}
+//											newPos = new Vector3i(Max.getX(), Min2.getY(), Max.getZ());
+//											volume2 = world.getBlockView(Min2, newPos);
+//											mutable = volume2.getBlockWorker();
+//											Merger merge = new Merger();
+//											mutable.merge(volume1, merge, volume2);
+											break;
+										case "down"://-y
+											for (int x = min.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = max.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
+										case "north"://-z
+											for (int x = min.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = max.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
+										case "south"://+z
+											for (int x = min.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= min.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
+										case "east"://+x
+											for (int x = min.getX(); x <= min.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
+										case "west"://-x
+											for (int x = max.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
 									}
 									break;
 								//hiding
@@ -187,29 +266,24 @@ public class timer
 										{
 											for (int z = HideMin.getZ(); z <= HideMax.getZ(); z++) 
 											{
-												world.setBlock(x, y, z, BlockTypes.AIR.getDefaultState());
+												world.setBlock(x, y, z, state_AIR);
 											}
 										}
 									}
 									break;
 							}
-							
+
 							//finally, we put the blocks inside the buffer on the new location
 							switch (hiding)
 							{
 								//not hiding
 								case 0:
-									for (int x = min.getX(); x <= max.getX(); x++) 
-									{
-										for (int y = min.getY(); y <= max.getY(); y++) 
-										{
-											for (int z = min.getZ(); z <= max.getZ(); z++) 
-											{
-												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
-												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
-											}
-										}
-									}
+									//next location in the world of our blocks inside a volume
+									MutableBlockVolume volume = world.getBlockView(Min, Max);
+									MutableBlockVolumeWorker<?> mutable;
+									mutable = volume.getBlockWorker();
+									Merger merge = new Merger();
+									mutable.merge(Thevolume.get(Name), merge, volume);
 									break;
 								//hiding
 								case 1:
@@ -219,7 +293,7 @@ public class timer
 										{
 											for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
 											{
-												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
+												BlockState block = Thevolume.get(Name).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
 											}
 										}
@@ -232,28 +306,30 @@ public class timer
 				else
 				{
 					//if true then we can move
-					if (Thestat.get(ObjectName.getKey()).booleanValue())
+					if (Thestat.get(Name).booleanValue())
 					{
-						if (TheCurrentduration.get(ObjectName.getKey()).intValue() < Theduration.get(ObjectName.getKey()).intValue())
+						if (TheCurrentduration.get(Name).intValue() < Theduration.get(Name).intValue())
 						{
-							int currentDuration = TheCurrentduration.get(ObjectName.getKey()).intValue();
-							TheCurrentduration.replace(ObjectName.getKey(), ++currentDuration);
+							int currentDuration = TheCurrentduration.get(Name).intValue();
+							TheCurrentduration.replace(Name, ++currentDuration);
 						}
 						else
 						{
-							TheCurrentduration.replace(ObjectName.getKey(), 1);
-							Vector3i A = Thevector1.get(ObjectName.getKey());
-							Vector3i B = Thevector2.get(ObjectName.getKey());
+							TheCurrentduration.replace(Name, 1);
+							Vector3i A = Thevector1.get(Name);
+							Vector3i B = Thevector2.get(Name);
 							Vector3i Min = size.Min(A, B);
 							Vector3i Max = size.Max(A, B);
 							Vector3i HideMin = Min;
 							Vector3i HideMax = Max;
 							Vector3i Min2 = Min;
-							World world = Sponge.getServer().getWorld(Theworld.get(ObjectName.getKey()).toString()).get();
-							int Currentmove = TheCurrentposition.get(ObjectName.getKey());
 							Vector3i hiding1 = new Vector3i(0, 0, 0);
 							Vector3i hiding2 = new Vector3i(0, 0, 0);
-							switch (Thedirection.get(ObjectName.getKey()).toString())
+							Vector3i min = Thevolume.get(Name).getBlockMin();
+							Vector3i max = Thevolume.get(Name).getBlockMax();
+							World world = Sponge.getServer().getWorld(Theworld.get(Name).toString()).get();
+							int Currentmove = TheCurrentposition.get(Name);
+							switch (Thedirection.get(Name).toString())
 							{
 								case "up":
 									Min = new Vector3i(Min.getX(), Min.getY()-1, Min.getZ());
@@ -305,45 +381,107 @@ public class timer
 									break;
 							}
 							Currentmove--;
-							movingobject.plugin.Updatestats(Currentmove, "off", ObjectName.getKey());
-							TheCurrentposition.replace(ObjectName.getKey(), Currentmove);
+							movingobject.plugin.Updatestats(Currentmove, "off", Name);
+							TheCurrentposition.replace(Name, Currentmove);
 							if (Currentmove == 0)
 							{
-								Thestat.replace(ObjectName.getKey(), true, false);
+								Thestat.replace(Name, true, false);
 							}
 							//this is to prevent misuse of redstone circuits
 							if (Currentmove < 0)
 							{
-								Currentmove = 0;
-								TheCurrentposition.replace(ObjectName.getKey(), Currentmove);
-								remove(ObjectName.getKey());
+								TheCurrentposition.replace(Name, 0);
+								remove(Name);
 								break;
 							}
-							final Vector3i min = Thevolume.get(ObjectName.getKey()).getBlockMin();
-							final Vector3i max = Thevolume.get(ObjectName.getKey()).getBlockMax();
 							int hiding = 0;
-							if (Thehide.get(ObjectName.getKey()).booleanValue())
+							if (Thehide.get(Name).booleanValue())
 							{
 								hiding++;
 							}
-							
+							BlockState state_AIR = BlockTypes.AIR.getDefaultState();
 							switch (hiding)
 							{
 								//not hiding
 								case 0:
-									//and we fill the current block space with air
-									for (int x = min.getX(); x <= max.getX(); x++) 
+									//we must fill only the needed blocks not more not less
+									switch (Thedirection.get(Name).toString())
 									{
-										for (int y = min.getY(); y <= max.getY(); y++) 
-										{
-											for (int z = min.getZ(); z <= max.getZ(); z++) 
+										case "up"://-y
+											for (int x = min.getX(); x <= max.getX(); x++) 
 											{
-												world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, BlockTypes.AIR.getDefaultState());
+												for (int y = max.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
 											}
-										}
+											break;
+										case "down"://+y
+											for (int x = min.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= min.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
+										case "north"://+z
+											for (int x = min.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
+										case "south"://-z
+											for (int x = min.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
+										case "east"://-x
+											for (int x = min.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
+										case "west"://+x
+											for (int x = min.getX(); x <= max.getX(); x++) 
+											{
+												for (int y = min.getY(); y <= max.getY(); y++) 
+												{
+													for (int z = min.getZ(); z <= max.getZ(); z++) 
+													{
+														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
+													}
+												}
+											}
+											break;
 									}
 									break;
-								//hiding
+									//hiding
 								case 1:
 									//and we fill the current block space with air
 									for (int x = HideMin.getX(); x <= HideMax.getX(); x++) 
@@ -352,7 +490,7 @@ public class timer
 										{
 											for (int z = HideMin.getZ(); z <= HideMax.getZ(); z++) 
 											{
-												world.setBlock(x, y, z, BlockTypes.AIR.getDefaultState());
+												world.setBlock(x, y, z, state_AIR);
 											}
 										}
 									}
@@ -363,17 +501,12 @@ public class timer
 							{
 								//not hiding
 								case 0:
-									for (int x = min.getX(); x <= max.getX(); x++) 
-									{
-										for (int y = min.getY(); y <= max.getY(); y++) 
-										{
-											for (int z = min.getZ(); z <= max.getZ(); z++) 
-											{
-												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
-												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
-											}
-										}
-									}
+									//next location in the world of our blocks inside a volume
+									MutableBlockVolume volume = world.getBlockView(Min, Max);
+									MutableBlockVolumeWorker<?> mutable;
+									mutable = volume.getBlockWorker();
+									Merger merge = new Merger();
+									mutable.merge(Thevolume.get(Name), merge, volume);
 									break;
 								//hiding
 								case 1:
@@ -383,7 +516,7 @@ public class timer
 										{
 											for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
 											{
-												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
+												BlockState block = Thevolume.get(Name).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
 											}
 										}
@@ -395,13 +528,13 @@ public class timer
 					else
 					{
 						//remove at end
-						remove(ObjectName.getKey());
+						remove(Name);
 					}
 				}
 			}
 		}
 	}
-	
+
 	//start animation (lever push) used also to init it
 	public static void start(String Name, int Duration, int Length, String Direction, int Currentposition, String Currentstat, String World, boolean Hide, Vector3i First, Vector3i Second)
 	{
@@ -427,7 +560,7 @@ public class timer
 				TheCurrentposition.put(Name, Currentposition);
 				Theactivestat.put(Name, false);
 				Thestat.put(Name, true);
-				
+
 			}
 			else if (Currentstat.equals("off"))
 			{
@@ -482,7 +615,7 @@ public class timer
 			{
 				volume = movingobject.plugin.Getvolume(Name);
 			}
-			
+
 			Thevolume.put(Name, volume);
 		}
 		else //do a switch
@@ -500,7 +633,7 @@ public class timer
 			}
 		}
 	}
-	
+
 	//stop animation (lever pull)
 	public static void stop(String Name)
 	{
@@ -508,7 +641,7 @@ public class timer
 		//if we don't do this we got an unexpected behavior
 		Thestat.replace(Name, true);
 	}
-	
+
 	//when the object return to the first position, we delete it
 	private static void remove(String Name)
 	{
