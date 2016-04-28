@@ -3,6 +3,8 @@ package com.ricky30.movingobject.task;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
@@ -18,7 +20,7 @@ import com.ricky30.movingobject.utility.size;
 public class timer
 {
 	//the direction of the displacement
-	static Map<String, String> Thedirection = new HashMap<String, String>();
+	static Map<String, String> Thedirection = new ConcurrentHashMap<String, String>();
 	//the stat of an object - false mean not meet the end of displacement
 	static Map<String, Boolean> Thestat = new HashMap<String, Boolean>();
 	//current world of the object
@@ -48,7 +50,8 @@ public class timer
 		//if this is empty then there is nothing to do
 		if (!Thedirection.isEmpty())
 		{
-			for (Entry<String, String> ObjectName: Thedirection.entrySet()) 
+			Set<Entry<String, String>> DirectionCopy =  Thedirection.entrySet();
+			for (Entry<String, String> ObjectName: DirectionCopy) 
 			{
 				String Name = ObjectName.getKey();
 				if (Theactivestat.get(Name).booleanValue())
