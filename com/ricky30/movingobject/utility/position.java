@@ -15,10 +15,10 @@ public class position
 	{
 		config = movingobject.plugin.getConfig();
 		boolean isInside = false;
-		int PosX = Pos.getX();
-		int PosY = Pos.getY();
-		int PosZ = Pos.getZ();
-		for (Object text: config.getNode("objectName").getChildrenMap().keySet())
+		final int PosX = Pos.getX();
+		final int PosY = Pos.getY();
+		final int PosZ = Pos.getZ();
+		for (final Object text: config.getNode("objectName").getChildrenMap().keySet())
 		{
 			//get the size of the object
 			int X1, X2, Y1, Y2, Z1, Z2;
@@ -30,16 +30,16 @@ public class position
 			Z2 = config.getNode("objectName", text.toString(), "fin_Z").getInt();
 
 			//converted to vector
-			Vector3i first = new Vector3i(X1, Y1, Z1);
-			Vector3i second = new Vector3i(X2, Y2, Z2);
-			
+			final Vector3i first = new Vector3i(X1, Y1, Z1);
+			final Vector3i second = new Vector3i(X2, Y2, Z2);
+
 			//get the world of this object
-			String World = config.getNode("objectName", text.toString(), "world").getString();
-			
+			final String World = config.getNode("objectName", text.toString(), "world").getString();
+
 			boolean InsideX = false;
 			boolean InsideY = false;
 			boolean InsideZ = false;
-			
+
 			//before anything if we are not inside the good world, skip
 			if (World.equals(world2.getName()))
 			{
@@ -87,7 +87,7 @@ public class position
 						InsideZ = true;
 					}
 				}
-				
+
 				if (InsideX && InsideY && InsideZ)
 				{
 					isInside = true;

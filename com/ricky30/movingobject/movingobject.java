@@ -49,7 +49,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.1.3")
+@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.1.4")
 public class movingobject
 {
 	public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;
@@ -57,44 +57,44 @@ public class movingobject
 	private Logger logger;
 	private ConfigurationNode config = null;
 	public static movingobject plugin;
-	
+
 	@Inject
 	@DefaultConfig(sharedRoot = true)
 	private Path defaultConfig;
-	
+
 	@Inject
 	@DefaultConfig(sharedRoot = true)
 	private ConfigurationLoader<CommentedConfigurationNode> configManager;
-	
-	private Scheduler scheduler = Sponge.getScheduler();
-	private Task.Builder taskBuilder = scheduler.createTaskBuilder();
+
+	private final Scheduler scheduler = Sponge.getScheduler();
+	private final Task.Builder taskBuilder = scheduler.createTaskBuilder();
 	private Task task;
-	
+
 	public Task gettasks()
 	{
 		return this.task;
 	}
-	
+
 	public Task.Builder getTaskbuilder()
 	{
 		return this.taskBuilder;
 	}
-	
+
 	public ConfigurationNode getConfig()
 	{
 		return this.config;
 	}
-	
+
 	public Path getDefaultConfig() 
 	{
-        return this.defaultConfig;
-    }
-	
+		return this.defaultConfig;
+	}
+
 	public ConfigurationLoader<CommentedConfigurationNode> getConfigManager() 
 	{
-        return this.configManager;
-    }
-	
+		return this.configManager;
+	}
+
 	public Logger getLogger()
 	{
 		return this.logger;
@@ -103,30 +103,23 @@ public class movingobject
 	@Listener
 	public void onServerStart(GameInitializationEvent event)
 	{
-		getLogger().info("movingobject start.");
+		getLogger().info("MovingObject start.");
 		EXTENT_BUFFER_FACTORY = Sponge.getRegistry().getExtentBufferFactory();
 		plugin = this;
 		try
 		{
 			reload();
-			if (this.config.getNode("ConfigVersion").getInt() != 2)
-			{
-				getLogger().info("your config file is outdated");
-				getLogger().info("I update it");
-				setupconfig();
-			}
 			if (!Files.exists(getDefaultConfig())) 
 			{
-
 				Files.createFile(getDefaultConfig());
 				setupconfig();
 			}
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			getLogger().error("Couldn't create default configuration file!");
 		}
-		
+
 		task = movingobject.plugin.getTaskbuilder().execute(new Runnable()
 		{
 			@Override
@@ -135,21 +128,21 @@ public class movingobject
 				timer.run();
 			}
 		}).interval(1, TimeUnit.SECONDS).name("movingobject").submit(this);
-		
-		HashMap<List<String>, CommandSpec> subcommands = new HashMap<List<String>, CommandSpec>();
-		
+
+		final HashMap<List<String>, CommandSpec> subcommands = new HashMap<List<String>, CommandSpec>();
+
 		subcommands.put(Arrays.asList("define"), CommandSpec.builder()
-				.description(Text.of("allow use of stick to define movingobject"))
+				.description(Text.of("Allow use of stick to define movingobject"))
 				.permission("movingobject.define")
 				.executor(new commandDefine())
 				.build());
 		subcommands.put(Arrays.asList("changetool"), CommandSpec.builder()
-				.description(Text.of("change tool used to define a MO"))
+				.description(Text.of("Change tool used to define a MO"))
 				.permission("movingobject.changetool")
 				.executor(new commandChangetool())
 				.build());
 		subcommands.put(Arrays.asList("list"), CommandSpec.builder()
-				.description(Text.of("list all movingobject"))
+				.description(Text.of("List all movingobject"))
 				.permission("movingobject.list")
 				.executor(new commandList())
 				.build());
@@ -159,13 +152,13 @@ public class movingobject
 				.executor(new commandReload())
 				.build());
 		subcommands.put(Arrays.asList("save"), CommandSpec.builder()
-				.description(Text.of("save a named object"))
+				.description(Text.of("Save a named object"))
 				.permission("movingobject.save")
 				.arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))))
 				.executor(new commandSave())
 				.build());
 		subcommands.put(Arrays.asList("delete"), CommandSpec.builder()
-				.description(Text.of("delete a named object"))
+				.description(Text.of("Delete a named object"))
 				.permission("movingobject.delete")
 				.arguments(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))))
 				.executor(new commandDelete())
@@ -174,96 +167,98 @@ public class movingobject
 				.description(Text.of("set moving direction for named object"))
 				.permission("movingobject.direction")
 				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
-				GenericArguments.onlyOne(GenericArguments.string(Text.of("direction")))))
+						GenericArguments.onlyOne(GenericArguments.string(Text.of("direction")))))
 				.executor(new commandDirection())
 				.build());
 		subcommands.put(Arrays.asList("time"), CommandSpec.builder()
 				.description(Text.of("Set speed in seconds for named object"))
 				.permission("movingobject.time")
 				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
-				GenericArguments.onlyOne(GenericArguments.integer(Text.of("duration")))))
+						GenericArguments.onlyOne(GenericArguments.integer(Text.of("duration")))))
 				.executor(new commandTime())
 				.build());
 		subcommands.put(Arrays.asList("length"), CommandSpec.builder()
 				.description(Text.of("Set displacement length for named object"))
 				.permission("movingobject.length")
 				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
-				GenericArguments.onlyOne(GenericArguments.integer(Text.of("length")))))
+						GenericArguments.onlyOne(GenericArguments.integer(Text.of("length")))))
 				.executor(new commandLength())
 				.build());
 		subcommands.put(Arrays.asList("hide"), CommandSpec.builder()
 				.description(Text.of("Set hidding for named object"))
 				.permission("movingobject.hide")
 				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
-				GenericArguments.onlyOne(GenericArguments.string(Text.of("hide")))))
+						GenericArguments.onlyOne(GenericArguments.string(Text.of("hide")))))
 				.executor(new commandHide())
 				.build());
-		
-		CommandSpec movingobjectcommand = CommandSpec.builder()
-			    .description(Text.of("list all movingobject Command"))
-			    .executor(new commandMO())
-			    .children(subcommands)
-			    .build();
-		
+
+		final CommandSpec movingobjectcommand = CommandSpec.builder()
+				.description(Text.of("List all movingobject Command"))
+				.executor(new commandMO())
+				.children(subcommands)
+				.build();
+
 		Sponge.getCommandManager().register(this, movingobjectcommand, "mo");
 		Sponge.getEventManager().registerListeners(this, new triggersevent());
 		Sponge.getEventManager().registerListeners(this, new selectionevent());
-		
-		getLogger().info("movingobject started.");
+
+		getLogger().info("MovingObject started.");
 	}
-	
+
 	@Listener
 	public void onServerStopping(GameStoppingServerEvent event)
 	{
-		getLogger().info("movingobject stop.");
+		getLogger().info("MovingObject stop.");
+		task.cancel();
+		task = null;
 		save();
-		getLogger().info("movingobject stopped.");
+		getLogger().info("MovingObject stopped.");
 	}
-	
+
 	private void setupconfig()
 	{
-        this.config.getNode("ConfigVersion").setValue(2);
-        this.config.getNode("tool").setValue(ItemTypes.STICK.getId());
-        save();
+		this.config.getNode("ConfigVersion").setValue(2);
+		this.config.getNode("tool").setValue(ItemTypes.STICK.getId());
+		save();
 	}
-	
+
 	public void save()
 	{
 		try
 		{
 			getConfigManager().save(this.config);
-		} catch (IOException e) 
-        {
-            getLogger().error("Failed to save config file!", e);
-        }
+		} catch (final IOException e) 
+		{
+			getLogger().error("Failed to save config file!", e);
+		}
 	}
-	
+
 	public void reload()
 	{
 		try
 		{
 			this.config = getConfigManager().load();
-		} catch (IOException e)
+		} catch (final IOException e)
 		{
-			e.printStackTrace();
+			getLogger().error("Failed to load config file!", e);
 		}
 	}
-	
+
 	public String GetTool()
 	{
 		return this.config.getNode("tool").getString();
 	}
-	
+
 	public void Updatestats(int Currentposition, String Currentstat, String Name)
 	{
 		this.config.getNode("objectName", Name, "currentposition").setValue(Currentposition);
-        this.config.getNode("objectName", Name, "currentstat").setValue(Currentstat);
-        save();
+		this.config.getNode("objectName", Name, "currentstat").setValue(Currentstat);
+		save();
 	}
-	
+
 	public void Storevolume(MutableBlockVolume volume, String Name)
 	{
-		List<BlockState> Blocksmeta = new ArrayList<BlockState>(); 
+		final List<BlockState> Blocksmeta = new ArrayList<BlockState>(); 
 		final Vector3i min = volume.getBlockMin();
 		final Vector3i max = volume.getBlockMax();
 		for (int x = min.getX(); x <= max.getX(); x++) 
@@ -278,13 +273,13 @@ public class movingobject
 		}
 
 		int Number = 0;
-		for (BlockState blockstate: Blocksmeta)
+		for (final BlockState blockstate: Blocksmeta)
 		{
 			this.config.getNode("objectName", Name, "volume", Number, "BlockState").setValue(blockstate.toString());
 			Number++;
 		}
 	}
-	
+
 	public MutableBlockVolume Getvolume (String Name)
 	{
 		int X1, X2, Y1, Y2, Z1, Z2;
@@ -294,18 +289,18 @@ public class movingobject
 		X2 = this.config.getNode("objectName", Name, "fin_X").getInt();
 		Y2 = this.config.getNode("objectName", Name, "fin_Y").getInt();
 		Z2 = this.config.getNode("objectName", Name, "fin_Z").getInt();
-		Vector3i First = new Vector3i(X1, Y1, Z1);
-		Vector3i Second = new Vector3i(X2, Y2, Z2);
-		MutableBlockVolume volume  = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(First, Second));
+		final Vector3i First = new Vector3i(X1, Y1, Z1);
+		final Vector3i Second = new Vector3i(X2, Y2, Z2);
+		final MutableBlockVolume volume  = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(First, Second));
 		final Vector3i min = volume.getBlockMin();
 		final Vector3i max = volume.getBlockMax();
-		
-		int Length = volume.getBlockSize().getX() * volume.getBlockSize().getY() * volume.getBlockSize().getZ();
-		List<DataContainer> Blocksmeta = new ArrayList<DataContainer>(); 
-		ConfigurateTranslator  tr = ConfigurateTranslator.instance();
+
+		final int Length = volume.getBlockSize().getX() * volume.getBlockSize().getY() * volume.getBlockSize().getZ();
+		final List<DataContainer> Blocksmeta = new ArrayList<DataContainer>(); 
+		final ConfigurateTranslator  tr = ConfigurateTranslator.instance();
 		for (int index = 0; index < Length; index++)
 		{
-			ConfigurationNode node = this.config.getNode("objectName", Name, "volume", index);
+			final ConfigurationNode node = this.config.getNode("objectName", Name, "volume", index);
 			Blocksmeta.add(tr.translateFrom(node));
 		}
 
@@ -316,8 +311,8 @@ public class movingobject
 			{
 				for (int z = min.getZ(); z <= max.getZ(); z++) 
 				{
-					DataContainer cont = Blocksmeta.get(index);
-					BlockState state = BlockState.builder().build(cont).get();
+					final DataContainer cont = Blocksmeta.get(index);
+					final BlockState state = BlockState.builder().build(cont).get();
 					volume.setBlock(x, y, z, state);
 					index++;
 				}

@@ -22,7 +22,7 @@ public class selectionevent
 	private static Map<String, Vector3i> first = new HashMap<String, Vector3i>();
 	private static Map<String, Vector3i> second = new HashMap<String, Vector3i>();
 	private static Map<String, Vector3i> trigger = new HashMap<String, Vector3i>();
-	
+
 	@Listener
 	public void oninteractblockPrimary(ChangeBlockEvent.Break Event, @First Player player)
 	{
@@ -44,7 +44,7 @@ public class selectionevent
 			}
 		}
 	}
-	
+
 	@Listener
 	public void oninteractblockPrimary(InteractBlockEvent.Primary Event, @First Player player)
 	{
@@ -81,27 +81,27 @@ public class selectionevent
 			}
 		}
 	}
-	
+
 	public static Vector3i getFirst(Player player)
 	{
 		return first.get(player.getUniqueId().toString());
 	}
-	
+
 	public static Vector3i getSecond(Player player)
 	{
 		return second.get(player.getUniqueId().toString());
 	}
-	
+
 	public static Vector3i getTrigger(Player player)
 	{
 		return trigger.get(player.getUniqueId().toString());
 	}
-	
+
 	public static boolean IsreadytoSave(Player player)
 	{
 		return isready.get(player.getUniqueId().toString());
 	}
-	
+
 	public static void Reset(Player player)
 	{
 		//in case we defined wrongly, and choose to redo the define command , we try to remove every value (set or not)
@@ -113,14 +113,14 @@ public class selectionevent
 		first.remove(player.getUniqueId().toString());
 		second.remove(player.getUniqueId().toString());
 		trigger.remove(player.getUniqueId().toString());
-		
+
 		isready.put(player.getUniqueId().toString(), false);
 		primaryUsed.put(player.getUniqueId().toString(), false);
 		secondaryUsed.put(player.getUniqueId().toString(), false);
 		triggerselect.put(player.getUniqueId().toString(), false);
 		isActive.put(player.getUniqueId().toString(), true);
 	}
-	
+
 	public static void Clear(Player player)
 	{
 		isready.remove(player.getUniqueId().toString());

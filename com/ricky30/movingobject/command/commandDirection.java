@@ -22,15 +22,15 @@ public class commandDirection implements CommandExecutor
 	public CommandResult execute(CommandSource src, CommandContext args)
 			throws CommandException
 	{
-		String Name = args.<String>getOne("name").get();
-		String Dir = args.<String>getOne("direction").get();
-		Player player = (Player) src;
+		final String Name = args.<String>getOne("name").get();
+		final String Dir = args.<String>getOne("direction").get();
+		final Player player = (Player) src;
 		if (Dir.equals("north") || Dir.equals("south") || Dir.equals("east") || Dir.equals("west") || Dir.equals("up") || Dir.equals("down"))
 		{
 			this.config = movingobject.plugin.getConfig();
 			if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
 			{
-				UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
+				final UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
 				if (id.equals(player.getUniqueId()) || player.hasPermission("movingobject.bypass"))
 				{
 					this.config.getNode("objectName", Name, "direction").setValue(Dir);
@@ -49,7 +49,7 @@ public class commandDirection implements CommandExecutor
 			src.sendMessage(Text.of("Direction must be: north south east west up down"));
 			return CommandResult.empty();
 		}
-		
+
 		src.sendMessage(Text.of("Object " , Name, " not found"));
 		return CommandResult.empty();
 	}

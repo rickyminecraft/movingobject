@@ -21,7 +21,7 @@ public class commandList implements CommandExecutor
 			throws CommandException
 	{
 		this.config = movingobject.plugin.getConfig();
-		for (Object text: this.config.getNode("objectName").getChildrenMap().keySet())
+		for (final Object text: this.config.getNode("objectName").getChildrenMap().keySet())
 		{
 			//get the size of the mine
 			int X1, X2, Y1, Y2, Z1, Z2, TX, TY, TZ;
@@ -36,12 +36,12 @@ public class commandList implements CommandExecutor
 			TZ = this.config.getNode("objectName", text.toString(), "trigger_Z").getInt();
 
 			//converted to vector
-			Vector3i first = new Vector3i(X1, Y1, Z1);
-			Vector3i second = new Vector3i(X2, Y2, Z2);
-			Vector3i trigger = new Vector3i(TX, TY, TZ);
-			
+			final Vector3i first = new Vector3i(X1, Y1, Z1);
+			final Vector3i second = new Vector3i(X2, Y2, Z2);
+			final Vector3i trigger = new Vector3i(TX, TY, TZ);
+
 			//get the world of this mine
-			String World = this.config.getNode("objectName", text.toString(), "world").getString();
+			final String World = this.config.getNode("objectName", text.toString(), "world").getString();
 			src.sendMessage(Text.of("Object: " , text.toString()));
 			src.sendMessage(Text.of("Coordinates: X=" , first.getX()," Y=", first.getY()," Z=", first.getZ(), " to X=" ,second.getX()," Y=", second.getY()," Z=", second.getZ()));
 			src.sendMessage(Text.of("Trigger: X=" , trigger.getX()," Y=", trigger.getY()," Z=", trigger.getZ()));

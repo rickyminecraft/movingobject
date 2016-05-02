@@ -23,9 +23,9 @@ public class commandSave implements CommandExecutor
 	public CommandResult execute(CommandSource src, CommandContext args)
 			throws CommandException
 	{
-		String Name = args.<String>getOne("name").get();
-		Player player = (Player) src;
-		String world = player.getWorld().getName();
+		final String Name = args.<String>getOne("name").get();
+		final Player player = (Player) src;
+		final String world = player.getWorld().getName();
 		this.config = movingobject.plugin.getConfig();
 		if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
 		{
@@ -34,28 +34,28 @@ public class commandSave implements CommandExecutor
 		}
 		if (selectionevent.IsreadytoSave(player))
 		{
-	        Vector3i positiondepart = selectionevent.getFirst(player);
-	        Vector3i positionfin = selectionevent.getSecond(player);
-	        Vector3i trigger = selectionevent.getTrigger(player);
-	        Vector3i Objectsize = size.length(positiondepart, positionfin);
-	        this.config.getNode("objectName", Name).setValue("");
-	        this.config.getNode("objectName", Name, "world").setValue(world);
-	        this.config.getNode("objectName", Name, "depart_X").setValue(positiondepart.getX());
-	        this.config.getNode("objectName", Name, "depart_Y").setValue(positiondepart.getY());
-	        this.config.getNode("objectName", Name, "depart_Z").setValue(positiondepart.getZ());
-	        this.config.getNode("objectName", Name, "fin_X").setValue(positionfin.getX());
-	        this.config.getNode("objectName", Name, "fin_Y").setValue(positionfin.getY());
-	        this.config.getNode("objectName", Name, "fin_Z").setValue(positionfin.getZ());
-	        this.config.getNode("objectName", Name, "trigger_X").setValue(trigger.getX());
-	        this.config.getNode("objectName", Name, "trigger_Y").setValue(trigger.getY());
-	        this.config.getNode("objectName", Name, "trigger_Z").setValue(trigger.getZ());
-	        this.config.getNode("objectName", Name, "movingtime").setValue(1);
-	        this.config.getNode("objectName", Name, "direction").setValue("up");
-	        this.config.getNode("objectName", Name, "length").setValue(Objectsize.getY());
-	        this.config.getNode("objectName", Name, "currentposition").setValue(0);
-	        this.config.getNode("objectName", Name, "currentstat").setValue("inactive");
-	        this.config.getNode("objectName", Name, "hide").setValue("false");
-	        this.config.getNode("objectName", Name, "owner").setValue(player.getUniqueId().toString());
+			final Vector3i positiondepart = selectionevent.getFirst(player);
+			final Vector3i positionfin = selectionevent.getSecond(player);
+			final Vector3i trigger = selectionevent.getTrigger(player);
+			final Vector3i Objectsize = size.length(positiondepart, positionfin);
+			this.config.getNode("objectName", Name).setValue("");
+			this.config.getNode("objectName", Name, "world").setValue(world);
+			this.config.getNode("objectName", Name, "depart_X").setValue(positiondepart.getX());
+			this.config.getNode("objectName", Name, "depart_Y").setValue(positiondepart.getY());
+			this.config.getNode("objectName", Name, "depart_Z").setValue(positiondepart.getZ());
+			this.config.getNode("objectName", Name, "fin_X").setValue(positionfin.getX());
+			this.config.getNode("objectName", Name, "fin_Y").setValue(positionfin.getY());
+			this.config.getNode("objectName", Name, "fin_Z").setValue(positionfin.getZ());
+			this.config.getNode("objectName", Name, "trigger_X").setValue(trigger.getX());
+			this.config.getNode("objectName", Name, "trigger_Y").setValue(trigger.getY());
+			this.config.getNode("objectName", Name, "trigger_Z").setValue(trigger.getZ());
+			this.config.getNode("objectName", Name, "movingtime").setValue(1);
+			this.config.getNode("objectName", Name, "direction").setValue("up");
+			this.config.getNode("objectName", Name, "length").setValue(Objectsize.getY());
+			this.config.getNode("objectName", Name, "currentposition").setValue(0);
+			this.config.getNode("objectName", Name, "currentstat").setValue("inactive");
+			this.config.getNode("objectName", Name, "hide").setValue("false");
+			this.config.getNode("objectName", Name, "owner").setValue(player.getUniqueId().toString());
 			movingobject.plugin.save();
 			selectionevent.Clear(player);
 			src.sendMessage(Text.of("Object " , Name, " saved"));

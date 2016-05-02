@@ -22,17 +22,17 @@ public class commandLength implements CommandExecutor
 	public CommandResult execute(CommandSource src, CommandContext args)
 			throws CommandException
 	{
-		String Name = args.<String>getOne("name").get();
+		final String Name = args.<String>getOne("name").get();
 		int Length = args.<Integer>getOne("length").get();
 		if (Length <1)
 		{
 			Length = 1;
 		}
-		Player player = (Player) src;
+		final Player player = (Player) src;
 		this.config = movingobject.plugin.getConfig();
 		if (this.config.getNode("objectName").getChildrenMap().get(Name) != null)
 		{
-			UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
+			final UUID id = UUID.fromString(this.config.getNode("objectName", Name, "owner").getString());
 			if (id.equals(player.getUniqueId()) || player.hasPermission("movingobject.bypass"))
 			{
 				this.config.getNode("objectName", Name, "length").setValue(Length);

@@ -41,7 +41,7 @@ public class size
 		currentsize = size;
 		return currentsize;
 	}
-	
+
 	public static Vector3i length(int Xfirst,int Yfirst,int Zfirst,int Xsecond,int Ysecond,int Zsecond)
 	{
 		Vector3i currentsize = new Vector3i(0,0,0);
@@ -79,7 +79,7 @@ public class size
 		currentsize = size;
 		return currentsize;
 	}
-	
+
 	public static Vector3i Min(Vector3i first, Vector3i second)
 	{
 		int x1, y1, z1;
@@ -108,10 +108,10 @@ public class size
 		{
 			z1 = second.getZ();
 		}
-		Vector3i vector3i = new Vector3i(x1, y1, z1);
+		final Vector3i vector3i = new Vector3i(x1, y1, z1);
 		return vector3i;
 	}
-	
+
 	public static Vector3i Max(Vector3i first, Vector3i second)
 	{
 		int x1, y1, z1;
@@ -139,7 +139,7 @@ public class size
 		{
 			z1 = first.getZ();
 		}
-		Vector3i vector3i = new Vector3i(x1, y1, z1);
+		final Vector3i vector3i = new Vector3i(x1, y1, z1);
 		return vector3i;
 	}
 }

@@ -10,7 +10,7 @@ public class Filler implements BlockVolumeFiller
 	@Override
 	public BlockState produce(int x, int y, int z)
 	{
-		BlockState state = BlockTypes.AIR.getDefaultState();
+		final BlockState state = BlockTypes.AIR.getDefaultState();
 		return state;
 	}
 

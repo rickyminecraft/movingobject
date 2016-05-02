@@ -12,7 +12,7 @@ public class Merger implements BlockVolumeMerger
 			int yFirst, int zFirst, UnmodifiableBlockVolume secondVolume,
 			int xSecond, int ySecond, int zSecond)
 	{
-		BlockState state = secondVolume.getBlock(xSecond, ySecond, zSecond);
+		final BlockState state = secondVolume.getBlock(xSecond, ySecond, zSecond);
 		return state;
 	}
 

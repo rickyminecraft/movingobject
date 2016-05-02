@@ -20,10 +20,10 @@ public class triggersevent
 	@Listener
 	public void ontriggersevent(InteractBlockEvent.Secondary event, @First Player player)
 	{
-		Vector3i BlockPos = event.getTargetBlock().getPosition();
-		String Eventworld = player.getWorld().getName();
+		final Vector3i BlockPos = event.getTargetBlock().getPosition();
+		final String Eventworld = player.getWorld().getName();
 		this.config = movingobject.plugin.getConfig();
-		for (Object text: this.config.getNode("objectName").getChildrenMap().keySet())
+		for (final Object text: this.config.getNode("objectName").getChildrenMap().keySet())
 		{
 			//get the location of the trigger
 			int TX, TY, TZ;
@@ -32,17 +32,16 @@ public class triggersevent
 			TZ = this.config.getNode("objectName", text.toString(), "trigger_Z").getInt();
 
 			//converted to vector
-			Vector3i trigger = new Vector3i(TX, TY, TZ);
+			final Vector3i trigger = new Vector3i(TX, TY, TZ);
 
 			//get the world of this object
-			String World = this.config.getNode("objectName", text.toString(), "world").getString();
+			final String World = this.config.getNode("objectName", text.toString(), "world").getString();
 
 			if (Eventworld.equals(World))
 			{
 				if (BlockPos.compareTo(trigger) == 0)
 				{
 					//if we are here then a trigger was activated
-					//
 					int X1, X2, Y1, Y2, Z1, Z2, duration, length, currentposition;
 					String direction, currentstat;
 					boolean hide;
@@ -52,8 +51,8 @@ public class triggersevent
 					X2 = this.config.getNode("objectName", text.toString(), "fin_X").getInt();
 					Y2 = this.config.getNode("objectName", text.toString(), "fin_Y").getInt();
 					Z2 = this.config.getNode("objectName", text.toString(), "fin_Z").getInt();
-					Vector3i first = new Vector3i(X1, Y1, Z1);
-					Vector3i second = new Vector3i(X2, Y2, Z2);
+					final Vector3i first = new Vector3i(X1, Y1, Z1);
+					final Vector3i second = new Vector3i(X2, Y2, Z2);
 					duration = this.config.getNode("objectName", text.toString(), "movingtime").getInt();
 					direction = this.config.getNode("objectName", text.toString(), "direction").getString();
 					length = this.config.getNode("objectName", text.toString(), "length").getInt();
@@ -69,14 +68,14 @@ public class triggersevent
 	@Listener
 	public void ontriggersevent(ChangeBlockEvent.Modify event, @First Player player)
 	{
-		String Eventworld = player.getWorld().getName();
+		final String Eventworld = player.getWorld().getName();
 		this.config = movingobject.plugin.getConfig();
 		boolean Activated = false;
-		for ( Transaction<BlockSnapshot> Block :event.getTransactions())
+		for ( final Transaction<BlockSnapshot> Block :event.getTransactions())
 		{
-			Vector3i BlockPos = Block.getDefault().getPosition();
+			final Vector3i BlockPos = Block.getDefault().getPosition();
 
-			for (Object text: this.config.getNode("objectName").getChildrenMap().keySet())
+			for (final Object text: this.config.getNode("objectName").getChildrenMap().keySet())
 			{
 
 				//get the location of the trigger
@@ -86,10 +85,10 @@ public class triggersevent
 				TZ = this.config.getNode("objectName", text.toString(), "trigger_Z").getInt();
 
 				//converted to vector
-				Vector3i trigger = new Vector3i(TX, TY, TZ);
+				final Vector3i trigger = new Vector3i(TX, TY, TZ);
 
 				//get the world of this object
-				String World = this.config.getNode("objectName", text.toString(), "world").getString();
+				final String World = this.config.getNode("objectName", text.toString(), "world").getString();
 
 				if (Eventworld.equals(World))
 				{
@@ -108,8 +107,8 @@ public class triggersevent
 							X2 = this.config.getNode("objectName", text.toString(), "fin_X").getInt();
 							Y2 = this.config.getNode("objectName", text.toString(), "fin_Y").getInt();
 							Z2 = this.config.getNode("objectName", text.toString(), "fin_Z").getInt();
-							Vector3i first = new Vector3i(X1, Y1, Z1);
-							Vector3i second = new Vector3i(X2, Y2, Z2);
+							final Vector3i first = new Vector3i(X1, Y1, Z1);
+							final Vector3i second = new Vector3i(X2, Y2, Z2);
 							duration = this.config.getNode("objectName", text.toString(), "movingtime").getInt();
 							direction = this.config.getNode("objectName", text.toString(), "direction").getString();
 							length = this.config.getNode("objectName", text.toString(), "length").getInt();
