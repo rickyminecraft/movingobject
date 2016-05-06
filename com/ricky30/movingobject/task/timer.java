@@ -9,12 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
+import org.spongepowered.api.effect.sound.SoundTypes;
 import org.spongepowered.api.world.World;
 import org.spongepowered.api.world.extent.MutableBlockVolume;
-import org.spongepowered.api.world.extent.worker.MutableBlockVolumeWorker;
+
+import com.flowpowered.math.vector.Vector3d;
 import com.flowpowered.math.vector.Vector3i;
 import com.ricky30.movingobject.movingobject;
-import com.ricky30.movingobject.utility.Merger;
 import com.ricky30.movingobject.utility.size;
 
 public class timer
@@ -25,14 +26,16 @@ public class timer
 	static Map<String, Boolean> Thestat = new HashMap<String, Boolean>();
 	//current world of the object
 	static Map<String, String> Theworld = new HashMap<String, String>();
+	//the sound played while moving
+	static Map<String, String> Thesound = new HashMap<String, String>();
 	//the length to move
 	static Map<String, Integer> Thelength = new HashMap<String, Integer>();
 	//the step already done
-	static Map<String, Integer> TheCurrentposition = new HashMap<String, Integer>();
+	static Map<String, Integer> Thecurrentposition = new HashMap<String, Integer>();
 	//the duration of a move
 	static Map<String, Integer> Theduration = new HashMap<String, Integer>();
 	//the time already passed
-	static Map<String, Integer> TheCurrentduration = new HashMap<String, Integer>();
+	static Map<String, Integer> Thecurrentduration = new HashMap<String, Integer>();
 	//hide or not the blocks
 	static Map<String, Boolean> Thehide = new HashMap<String, Boolean>();
 	//first vector
@@ -60,15 +63,15 @@ public class timer
 					if (!Thestat.get(Name).booleanValue())
 					{
 						//timing is used here
-						if (TheCurrentduration.get(Name).intValue() < Theduration.get(Name).intValue())
+						if (Thecurrentduration.get(Name).intValue() < Theduration.get(Name).intValue())
 						{
-							int currentDuration = TheCurrentduration.get(Name).intValue();
-							TheCurrentduration.replace(Name, ++currentDuration);
+							int currentDuration = Thecurrentduration.get(Name).intValue();
+							Thecurrentduration.replace(Name, ++currentDuration);
 						}
 						else
 						{
 							//we reset it to 1;
-							TheCurrentduration.replace(Name, 1);
+							Thecurrentduration.replace(Name, 1);
 							//we get the two vector of our object
 							final Vector3i A = Thevector1.get(Name);
 							final Vector3i B = Thevector2.get(Name);
@@ -86,7 +89,7 @@ public class timer
 							//we get the world where the object is
 							final World world = Sponge.getServer().getWorld(Theworld.get(Name).toString()).get();
 							//we get the current displacement
-							int Currentmove = TheCurrentposition.get(Name);
+							int Currentmove = Thecurrentposition.get(Name);
 							//switch depending on direction
 							//we add or substract one on x, y or z
 							//then we add or substract the currentmove (0, 1, 2, ...)
@@ -146,7 +149,7 @@ public class timer
 							Currentmove++;
 							movingobject.plugin.Updatestats(Currentmove, "on", Name);
 							//and we update the displacement stat
-							TheCurrentposition.replace(Name, Currentmove);
+							Thecurrentposition.replace(Name, Currentmove);
 							//if we get at the end then next time we don't move
 							if (Currentmove == Thelength.get(Name).intValue())
 							{
@@ -155,7 +158,7 @@ public class timer
 							//this is to prevent misuse of redstone circuits
 							if (Currentmove > Thelength.get(Name).intValue())
 							{
-								TheCurrentposition.replace(Name, Thelength.get(Name).intValue());
+								Thecurrentposition.replace(Name, Thelength.get(Name).intValue());
 								break;
 							}
 							//here goes the hiding
@@ -170,17 +173,9 @@ public class timer
 								//not hiding
 								case 0:
 									//we must fill only the needed blocks not more not less
-									// MutableBlockVolume volume1;
-									// MutableBlockVolume volume2;
-									// MutableBlockVolumeWorker<?> mutable;
-									// Vector3i newPos;
 									switch (Thedirection.get(Name).toString())
 									{
 										case "up"://+y
-											// volume1 = movingobject.EXTENT_BUFFER_FACTORY.createBlockBuffer(size.length(min.getX(), min.getY(), min.getZ(), max.getX(), min.getY(), max.getZ()));
-											// mutable = volume1.getBlockWorker();
-											// Filler fill = new Filler();
-											// mutable.fill(fill);
 											for (int x = min.getX(); x <= max.getX(); x++) 
 											{
 												for (int y = min.getY(); y <= min.getY(); y++) 
@@ -188,15 +183,9 @@ public class timer
 													for (int z = min.getZ(); z <= max.getZ(); z++) 
 													{
 														world.setBlock(Min2.getX() + x, Min2.getY() + y, Min2.getZ() + z, state_AIR);
-														//volume1.setBlock(x, y, z, state_AIR);
 													}
 												}
 											}
-											// newPos = new Vector3i(Max.getX(), Min2.getY(), Max.getZ());
-											// volume2 = world.getBlockView(Min2, newPos);
-											// mutable = volume2.getBlockWorker();
-											// Merger merge = new Merger();
-											// mutable.merge(volume1, merge, volume2);
 											break;
 										case "down"://-y
 											for (int x = min.getX(); x <= max.getX(); x++) 
@@ -282,11 +271,45 @@ public class timer
 								//not hiding
 								case 0:
 									//next location in the world of our blocks inside a volume
-									final MutableBlockVolume volume = world.getBlockView(Min, Max);
-									MutableBlockVolumeWorker<?> mutable;
-									mutable = volume.getBlockWorker();
-									final Merger merge = new Merger();
-									mutable.merge(Thevolume.get(Name), merge, volume);
+									for (int x = min.getX(); x <= max.getX(); x++) 
+									{
+										for (int y = min.getY(); y <= max.getY(); y++) 
+										{
+											for (int z = min.getZ(); z <= max.getZ(); z++) 
+											{
+												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
+												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
+												switch (Thesound.get(ObjectName.getKey()))
+												{
+													case "grass":
+														world.playSound(SoundTypes.STEP_GRASS, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "gravel":
+														world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "ladder":
+														world.playSound(SoundTypes.STEP_LADDER, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "sand":
+														world.playSound(SoundTypes.STEP_SAND, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "snow":
+														world.playSound(SoundTypes.STEP_SNOW, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "stone":
+														world.playSound(SoundTypes.STEP_STONE, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "wood":
+														world.playSound(SoundTypes.STEP_WOOD, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "wool":
+														world.playSound(SoundTypes.STEP_WOOL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													default:
+												}
+											}
+										}
+									}
 									break;
 									//hiding
 								case 1:
@@ -297,7 +320,35 @@ public class timer
 											for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
 											{
 												final BlockState block = Thevolume.get(Name).getBlock(x, y, z);
-												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
+												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
+												switch (Thesound.get(ObjectName.getKey()))
+												{
+													case "grass":
+														world.playSound(SoundTypes.STEP_GRASS, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "gravel":
+														world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "ladder":
+														world.playSound(SoundTypes.STEP_LADDER, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "sand":
+														world.playSound(SoundTypes.STEP_SAND, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "snow":
+														world.playSound(SoundTypes.STEP_SNOW, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "stone":
+														world.playSound(SoundTypes.STEP_STONE, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "wood":
+														world.playSound(SoundTypes.STEP_WOOD, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "wool":
+														world.playSound(SoundTypes.STEP_WOOL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													default:
+												}
 											}
 										}
 									}
@@ -311,14 +362,14 @@ public class timer
 					//if true then we can move
 					if (Thestat.get(Name).booleanValue())
 					{
-						if (TheCurrentduration.get(Name).intValue() < Theduration.get(Name).intValue())
+						if (Thecurrentduration.get(Name).intValue() < Theduration.get(Name).intValue())
 						{
-							int currentDuration = TheCurrentduration.get(Name).intValue();
-							TheCurrentduration.replace(Name, ++currentDuration);
+							int currentDuration = Thecurrentduration.get(Name).intValue();
+							Thecurrentduration.replace(Name, ++currentDuration);
 						}
 						else
 						{
-							TheCurrentduration.replace(Name, 1);
+							Thecurrentduration.replace(Name, 1);
 							final Vector3i A = Thevector1.get(Name);
 							final Vector3i B = Thevector2.get(Name);
 							Vector3i Min = size.Min(A, B);
@@ -331,7 +382,7 @@ public class timer
 							final Vector3i min = Thevolume.get(Name).getBlockMin();
 							final Vector3i max = Thevolume.get(Name).getBlockMax();
 							final World world = Sponge.getServer().getWorld(Theworld.get(Name).toString()).get();
-							int Currentmove = TheCurrentposition.get(Name);
+							int Currentmove = Thecurrentposition.get(Name);
 							switch (Thedirection.get(Name).toString())
 							{
 								case "up":
@@ -385,7 +436,7 @@ public class timer
 							}
 							Currentmove--;
 							movingobject.plugin.Updatestats(Currentmove, "off", Name);
-							TheCurrentposition.replace(Name, Currentmove);
+							Thecurrentposition.replace(Name, Currentmove);
 							if (Currentmove == 0)
 							{
 								Thestat.replace(Name, true, false);
@@ -393,7 +444,7 @@ public class timer
 							//this is to prevent misuse of redstone circuits
 							if (Currentmove < 0)
 							{
-								TheCurrentposition.replace(Name, 0);
+								Thecurrentposition.replace(Name, 0);
 								remove(Name);
 								break;
 							}
@@ -505,11 +556,45 @@ public class timer
 								//not hiding
 								case 0:
 									//next location in the world of our blocks inside a volume
-									final MutableBlockVolume volume = world.getBlockView(Min, Max);
-									MutableBlockVolumeWorker<?> mutable;
-									mutable = volume.getBlockWorker();
-									final Merger merge = new Merger();
-									mutable.merge(Thevolume.get(Name), merge, volume);
+									for (int x = min.getX(); x <= max.getX(); x++) 
+									{
+										for (int y = min.getY(); y <= max.getY(); y++) 
+										{
+											for (int z = min.getZ(); z <= max.getZ(); z++) 
+											{
+												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
+												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
+												switch (Thesound.get(ObjectName.getKey()))
+												{
+													case "grass":
+														world.playSound(SoundTypes.STEP_GRASS, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "gravel":
+														world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "ladder":
+														world.playSound(SoundTypes.STEP_LADDER, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "sand":
+														world.playSound(SoundTypes.STEP_SAND, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "snow":
+														world.playSound(SoundTypes.STEP_SNOW, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "stone":
+														world.playSound(SoundTypes.STEP_STONE, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "wood":
+														world.playSound(SoundTypes.STEP_WOOD, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "wool":
+														world.playSound(SoundTypes.STEP_WOOL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													default:
+												}
+											}
+										}
+									}
 									break;
 									//hiding
 								case 1:
@@ -520,7 +605,35 @@ public class timer
 											for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
 											{
 												final BlockState block = Thevolume.get(Name).getBlock(x, y, z);
-												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block);
+												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
+												switch (Thesound.get(ObjectName.getKey()))
+												{
+													case "grass":
+														world.playSound(SoundTypes.STEP_GRASS, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "gravel":
+														world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "ladder":
+														world.playSound(SoundTypes.STEP_LADDER, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "sand":
+														world.playSound(SoundTypes.STEP_SAND, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "snow":
+														world.playSound(SoundTypes.STEP_SNOW, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "stone":
+														world.playSound(SoundTypes.STEP_STONE, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "wood":
+														world.playSound(SoundTypes.STEP_WOOD, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													case "wool":
+														world.playSound(SoundTypes.STEP_WOOL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
+														break;
+													default:
+												}
 											}
 										}
 									}
@@ -539,35 +652,36 @@ public class timer
 	}
 
 	//start animation (lever push) used also to init it
-	public static void start(String Name, int Duration, int Length, String Direction, int Currentposition, String Currentstat, String World, boolean Hide, Vector3i First, Vector3i Second)
+	public static void start(String Name, int Duration, int Length, String Direction, int Currentposition, String Currentstat, String World, boolean Hide, Vector3i First, Vector3i Second, String Sound)
 	{
 		//first we store all values provided
 		if (Thedirection.get(Name) == null)
 		{
 			Theduration.put(Name, Duration);
-			TheCurrentduration.put(Name, 1);
+			Thecurrentduration.put(Name, 1);
 			Thelength.put(Name, Length);
 			Thedirection.put(Name, Direction);
 			Theworld.put(Name, World);
 			Thehide.put(Name, Hide);
 			Thevector1.put(Name, First);
 			Thevector2.put(Name, Second);
+			Thesound.put(Name, Sound);
 			if (Currentstat.equals("inactive"))
 			{
-				TheCurrentposition.put(Name, Currentposition);
+				Thecurrentposition.put(Name, Currentposition);
 				Theactivestat.put(Name, true);
 				Thestat.put(Name, false);
 			}
 			else if (Currentstat.equals("on"))
 			{
-				TheCurrentposition.put(Name, Currentposition);
+				Thecurrentposition.put(Name, Currentposition);
 				Theactivestat.put(Name, false);
 				Thestat.put(Name, true);
 
 			}
 			else if (Currentstat.equals("off"))
 			{
-				TheCurrentposition.put(Name, Currentposition);
+				Thecurrentposition.put(Name, Currentposition);
 				Theactivestat.put(Name, true);
 				Thestat.put(Name, false);
 			}
@@ -653,8 +767,8 @@ public class timer
 		{
 			Theduration.remove(Name);
 			Thedirection.remove(Name);
-			TheCurrentduration.remove(Name);
-			TheCurrentposition.remove(Name);
+			Thecurrentduration.remove(Name);
+			Thecurrentposition.remove(Name);
 			Thestat.remove(Name);
 			Theworld.remove(Name);
 			Thelength.remove(Name);
@@ -663,6 +777,7 @@ public class timer
 			Thehide.remove(Name);
 			Theactivestat.remove(Name);
 			Thevolume.remove(Name);
+			Thesound.remove(Name);
 		}
 	}
 }

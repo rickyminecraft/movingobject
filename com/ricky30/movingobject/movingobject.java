@@ -39,6 +39,7 @@ import com.ricky30.movingobject.command.commandList;
 import com.ricky30.movingobject.command.commandMO;
 import com.ricky30.movingobject.command.commandReload;
 import com.ricky30.movingobject.command.commandSave;
+import com.ricky30.movingobject.command.commandSound;
 import com.ricky30.movingobject.command.commandTime;
 import com.ricky30.movingobject.event.selectionevent;
 import com.ricky30.movingobject.event.triggersevent;
@@ -49,7 +50,7 @@ import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.1.4")
+@Plugin(id = "com.ricky30.movingobject", name = "movingobject", version = "1.1.5")
 public class movingobject
 {
 	public static ExtentBufferFactory EXTENT_BUFFER_FACTORY;
@@ -170,6 +171,13 @@ public class movingobject
 						GenericArguments.onlyOne(GenericArguments.string(Text.of("direction")))))
 				.executor(new commandDirection())
 				.build());
+		subcommands.put(Arrays.asList("sound"), CommandSpec.builder()
+				.description(Text.of("set sound for named object"))
+				.permission("movingobject.sound")
+				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
+						GenericArguments.onlyOne(GenericArguments.string(Text.of("sound")))))
+				.executor(new commandSound())
+				.build());
 		subcommands.put(Arrays.asList("time"), CommandSpec.builder()
 				.description(Text.of("Set speed in seconds for named object"))
 				.permission("movingobject.time")
@@ -188,7 +196,7 @@ public class movingobject
 				.description(Text.of("Set hidding for named object"))
 				.permission("movingobject.hide")
 				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.string(Text.of("name"))),
-						GenericArguments.onlyOne(GenericArguments.string(Text.of("hide")))))
+						GenericArguments.onlyOne(GenericArguments.bool(Text.of("hide")))))
 				.executor(new commandHide())
 				.build());
 
@@ -318,6 +326,7 @@ public class movingobject
 				}
 			}
 		}
+		this.config.getNode("objectName", Name).removeChild("volume");
 		return volume;
 	}
 }

@@ -43,7 +43,7 @@ public class triggersevent
 				{
 					//if we are here then a trigger was activated
 					int X1, X2, Y1, Y2, Z1, Z2, duration, length, currentposition;
-					String direction, currentstat;
+					String direction, currentstat, Sound;
 					boolean hide;
 					X1 = this.config.getNode("objectName", text.toString(), "depart_X").getInt();
 					Y1 = this.config.getNode("objectName", text.toString(), "depart_Y").getInt();
@@ -59,7 +59,8 @@ public class triggersevent
 					currentposition = this.config.getNode("objectName", text.toString(), "currentposition").getInt();
 					currentstat = this.config.getNode("objectName", text.toString(), "currentstat").getString();
 					hide = this.config.getNode("objectName", text.toString(), "hide").getBoolean();
-					timer.start(text.toString(), duration, length, direction, currentposition, currentstat, World, hide, first, second);
+					Sound = this.config.getNode("objectName", text.toString(), "sound").getString();
+					timer.start(text.toString(), duration, length, direction, currentposition, currentstat, World, hide, first, second, Sound);
 				}
 			}
 		}
@@ -89,7 +90,6 @@ public class triggersevent
 
 				//get the world of this object
 				final String World = this.config.getNode("objectName", text.toString(), "world").getString();
-
 				if (Eventworld.equals(World))
 				{
 					if (BlockPos.compareTo(trigger) == 0)
@@ -99,7 +99,7 @@ public class triggersevent
 						{
 							//if we are here then a trigger was activated
 							int X1, X2, Y1, Y2, Z1, Z2, duration, length, currentposition;
-							String direction, currentstat;
+							String direction, currentstat, Sound;
 							boolean hide;
 							X1 = this.config.getNode("objectName", text.toString(), "depart_X").getInt();
 							Y1 = this.config.getNode("objectName", text.toString(), "depart_Y").getInt();
@@ -115,7 +115,8 @@ public class triggersevent
 							currentposition = this.config.getNode("objectName", text.toString(), "currentposition").getInt();
 							currentstat = this.config.getNode("objectName", text.toString(), "currentstat").getString();
 							hide = this.config.getNode("objectName", text.toString(), "hide").getBoolean();
-							timer.start(text.toString(), duration, length, direction, currentposition, currentstat, World, hide, first, second);
+							Sound = this.config.getNode("objectName", text.toString(), "sound").getString();
+							timer.start(text.toString(), duration, length, direction, currentposition, currentstat, World, hide, first, second, Sound);
 							Activated = true;
 						}
 					}

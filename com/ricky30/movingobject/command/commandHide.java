@@ -23,8 +23,8 @@ public class commandHide implements CommandExecutor
 			throws CommandException
 	{
 		final String Name = args.<String>getOne("name").get();
-		final String Hide = args.<String>getOne("hide").get();
-		if (!Hide.equals("true") && !Hide.equals("false"))
+		final Boolean Hide = args.<Boolean>getOne("hide").get();
+		if (!Hide.equals(true) && !Hide.equals(false))
 		{
 			src.sendMessage(Text.of("Value must be true or false"));
 			return CommandResult.empty();
@@ -37,6 +37,13 @@ public class commandHide implements CommandExecutor
 			if (id.equals(player.getUniqueId()) || player.hasPermission("movingobject.bypass"))
 			{
 				this.config.getNode("objectName", Name, "hide").setValue(Hide);
+				if (Hide == false)
+				{
+					if (!this.config.getNode("objectName", Name, "volume").isVirtual())
+					{
+						this.config.getNode("objectName", Name).removeChild("volume");
+					}
+				}
 				movingobject.plugin.save();
 				src.sendMessage(Text.of("Object " , Name, " hidding set to ", Hide));
 				return CommandResult.success();
