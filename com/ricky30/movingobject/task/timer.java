@@ -53,6 +53,7 @@ public class timer
 		//if this is empty then there is nothing to do
 		if (!Thedirection.isEmpty())
 		{
+			//ParticleEffect p = Sponge.getRegistry().createBuilder(Builder.class).type(ParticleTypes.BLOCK_DUST).build();
 			final Set<Entry<String, String>> DirectionCopy =  Thedirection.entrySet();
 			for (final Entry<String, String> ObjectName: DirectionCopy) 
 			{
@@ -277,36 +278,10 @@ public class timer
 										{
 											for (int z = min.getZ(); z <= max.getZ(); z++) 
 											{
-												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
+												//world.spawnParticles(p, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z));
+												final BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
-												switch (Thesound.get(ObjectName.getKey()))
-												{
-													case "grass":
-														world.playSound(SoundTypes.STEP_GRASS, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "gravel":
-														world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "ladder":
-														world.playSound(SoundTypes.STEP_LADDER, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "sand":
-														world.playSound(SoundTypes.STEP_SAND, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "snow":
-														world.playSound(SoundTypes.STEP_SNOW, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "stone":
-														world.playSound(SoundTypes.STEP_STONE, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "wood":
-														world.playSound(SoundTypes.STEP_WOOD, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "wool":
-														world.playSound(SoundTypes.STEP_WOOL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													default:
-												}
+												playSound(ObjectName.getKey(), world, Min, x, y, z);
 											}
 										}
 									}
@@ -321,34 +296,7 @@ public class timer
 											{
 												final BlockState block = Thevolume.get(Name).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
-												switch (Thesound.get(ObjectName.getKey()))
-												{
-													case "grass":
-														world.playSound(SoundTypes.STEP_GRASS, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "gravel":
-														world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "ladder":
-														world.playSound(SoundTypes.STEP_LADDER, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "sand":
-														world.playSound(SoundTypes.STEP_SAND, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "snow":
-														world.playSound(SoundTypes.STEP_SNOW, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "stone":
-														world.playSound(SoundTypes.STEP_STONE, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "wood":
-														world.playSound(SoundTypes.STEP_WOOD, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "wool":
-														world.playSound(SoundTypes.STEP_WOOL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													default:
-												}
+												playSound(ObjectName.getKey(), world, Min, x, y, z);
 											}
 										}
 									}
@@ -562,36 +510,9 @@ public class timer
 										{
 											for (int z = min.getZ(); z <= max.getZ(); z++) 
 											{
-												BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
+												final BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
-												switch (Thesound.get(ObjectName.getKey()))
-												{
-													case "grass":
-														world.playSound(SoundTypes.STEP_GRASS, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "gravel":
-														world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "ladder":
-														world.playSound(SoundTypes.STEP_LADDER, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "sand":
-														world.playSound(SoundTypes.STEP_SAND, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "snow":
-														world.playSound(SoundTypes.STEP_SNOW, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "stone":
-														world.playSound(SoundTypes.STEP_STONE, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "wood":
-														world.playSound(SoundTypes.STEP_WOOD, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "wool":
-														world.playSound(SoundTypes.STEP_WOOL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													default:
-												}
+												playSound(ObjectName.getKey(), world, Min, x, y, z);
 											}
 										}
 									}
@@ -606,34 +527,7 @@ public class timer
 											{
 												final BlockState block = Thevolume.get(Name).getBlock(x, y, z);
 												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
-												switch (Thesound.get(ObjectName.getKey()))
-												{
-													case "grass":
-														world.playSound(SoundTypes.STEP_GRASS, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "gravel":
-														world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "ladder":
-														world.playSound(SoundTypes.STEP_LADDER, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "sand":
-														world.playSound(SoundTypes.STEP_SAND, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "snow":
-														world.playSound(SoundTypes.STEP_SNOW, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "stone":
-														world.playSound(SoundTypes.STEP_STONE, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "wood":
-														world.playSound(SoundTypes.STEP_WOOD, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													case "wool":
-														world.playSound(SoundTypes.STEP_WOOL, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z), 1);
-														break;
-													default:
-												}
+												playSound(ObjectName.getKey(), world, Min, x, y, z);
 											}
 										}
 									}
@@ -651,7 +545,7 @@ public class timer
 		}
 	}
 
-	//start animation (lever push) used also to init it
+	//start animation, used also to init it
 	public static void start(String Name, int Duration, int Length, String Direction, int Currentposition, String Currentstat, String World, boolean Hide, Vector3i First, Vector3i Second, String Sound)
 	{
 		//first we store all values provided
@@ -780,4 +674,37 @@ public class timer
 			Thesound.remove(Name);
 		}
 	}
+	
+	private static void playSound(String Name, World world, Vector3i min, int x, int y, int z)
+	{
+		switch (Thesound.get(Name))
+		{
+			case "grass":
+				world.playSound(SoundTypes.STEP_GRASS, new Vector3d(min.getX() + x, min.getY() + y, min.getZ() + z), 1);
+				break;
+			case "gravel":
+				world.playSound(SoundTypes.STEP_GRAVEL, new Vector3d(min.getX() + x, min.getY() + y, min.getZ() + z), 1);
+				break;
+			case "ladder":
+				world.playSound(SoundTypes.STEP_LADDER, new Vector3d(min.getX() + x, min.getY() + y, min.getZ() + z), 1);
+				break;
+			case "sand":
+				world.playSound(SoundTypes.STEP_SAND, new Vector3d(min.getX() + x, min.getY() + y, min.getZ() + z), 1);
+				break;
+			case "snow":
+				world.playSound(SoundTypes.STEP_SNOW, new Vector3d(min.getX() + x, min.getY() + y, min.getZ() + z), 1);
+				break;
+			case "stone":
+				world.playSound(SoundTypes.STEP_STONE, new Vector3d(min.getX() + x, min.getY() + y, min.getZ() + z), 1);
+				break;
+			case "wood":
+				world.playSound(SoundTypes.STEP_WOOD, new Vector3d(min.getX() + x, min.getY() + y, min.getZ() + z), 1);
+				break;
+			case "wool":
+				world.playSound(SoundTypes.STEP_WOOL, new Vector3d(min.getX() + x, min.getY() + y, min.getZ() + z), 1);
+				break;
+			default:
+		}
+	}
+
 }

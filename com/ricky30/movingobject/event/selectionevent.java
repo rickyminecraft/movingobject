@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.filter.cause.First;
 import org.spongepowered.api.text.Text;
@@ -24,29 +23,7 @@ public class selectionevent
 	private static Map<String, Vector3i> trigger = new HashMap<String, Vector3i>();
 
 	@Listener
-	public void oninteractblockPrimary(ChangeBlockEvent.Break Event, @First Player player)
-	{
-		if (!isActive.isEmpty())
-		{
-			if (isActive.get(player.getUniqueId().toString()).booleanValue())
-			{
-				if (triggerselect.get(player.getUniqueId().toString()).booleanValue())
-				{
-					isActive.put(player.getUniqueId().toString(), false);
-				}
-				if (player.getItemInHand().isPresent())
-				{
-					if (player.getItemInHand().get().getItem().getId().equals(movingobject.plugin.GetTool()))
-					{
-						Event.setCancelled(true);
-					}
-				}
-			}
-		}
-	}
-
-	@Listener
-	public void oninteractblockPrimary(InteractBlockEvent.Primary Event, @First Player player)
+	public void oninteractblockPrimary(InteractBlockEvent.Secondary Event, @First Player player)
 	{
 		if (!isActive.isEmpty())
 		{
@@ -75,6 +52,7 @@ public class selectionevent
 							triggerselect.put(player.getUniqueId().toString(), true);
 							isready.put(player.getUniqueId().toString(), true);
 							player.getCommandSource().get().sendMessage(Text.of("Ok now ready to save"));
+							isActive.put(player.getUniqueId().toString(), false);
 						}
 					}
 				}

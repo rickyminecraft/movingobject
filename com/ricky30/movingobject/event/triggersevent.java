@@ -72,13 +72,12 @@ public class triggersevent
 		final String Eventworld = player.getWorld().getName();
 		this.config = movingobject.plugin.getConfig();
 		boolean Activated = false;
-		for ( final Transaction<BlockSnapshot> Block :event.getTransactions())
+		for (final Transaction<BlockSnapshot> Block :event.getTransactions())
 		{
-			final Vector3i BlockPos = Block.getDefault().getPosition();
+			final Vector3i BlockPos = Block.getOriginal().getPosition();
 
 			for (final Object text: this.config.getNode("objectName").getChildrenMap().keySet())
 			{
-
 				//get the location of the trigger
 				int TX, TY, TZ;
 				TX = this.config.getNode("objectName", text.toString(), "trigger_X").getInt();
