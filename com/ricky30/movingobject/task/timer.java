@@ -53,7 +53,6 @@ public class timer
 		//if this is empty then there is nothing to do
 		if (!Thedirection.isEmpty())
 		{
-			//ParticleEffect p = Sponge.getRegistry().createBuilder(Builder.class).type(ParticleTypes.BLOCK_DUST).build();
 			final Set<Entry<String, String>> DirectionCopy =  Thedirection.entrySet();
 			for (final Entry<String, String> ObjectName: DirectionCopy) 
 			{
@@ -85,6 +84,12 @@ public class timer
 							Vector3i Min2 = Min;
 							Vector3i hiding1 = new Vector3i(0, 0, 0);
 							Vector3i hiding2 = new Vector3i(0, 0, 0);
+							//avoid potential error
+							if (!Thevolume.containsKey(Name))
+							{
+								remove(Name);
+								return;
+							}
 							final Vector3i min = Thevolume.get(Name).getBlockMin();
 							final Vector3i max = Thevolume.get(Name).getBlockMax();
 							//we get the world where the object is
@@ -267,41 +272,7 @@ public class timer
 							}
 
 							//finally, we put the blocks inside the buffer on the new location
-							switch (hiding)
-							{
-								//not hiding
-								case 0:
-									//next location in the world of our blocks inside a volume
-									for (int x = min.getX(); x <= max.getX(); x++) 
-									{
-										for (int y = min.getY(); y <= max.getY(); y++) 
-										{
-											for (int z = min.getZ(); z <= max.getZ(); z++) 
-											{
-												//world.spawnParticles(p, new Vector3d(Min.getX() + x, Min.getY() + y, Min.getZ() + z));
-												final BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
-												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
-												playSound(ObjectName.getKey(), world, Min, x, y, z);
-											}
-										}
-									}
-									break;
-									//hiding
-								case 1:
-									for (int x = min.getX() + hiding1.getX(); x <= max.getX() - hiding2.getX(); x++) 
-									{
-										for (int y = min.getY() + hiding1.getY(); y <= max.getY() - hiding2.getY(); y++) 
-										{
-											for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
-											{
-												final BlockState block = Thevolume.get(Name).getBlock(x, y, z);
-												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
-												playSound(ObjectName.getKey(), world, Min, x, y, z);
-											}
-										}
-									}
-									break;
-							}
+							moveBlocks (hiding, min, max, Min, hiding1, hiding2, world, Name);
 						}
 					}
 				}
@@ -327,6 +298,12 @@ public class timer
 							Vector3i Min2 = Min;
 							Vector3i hiding1 = new Vector3i(0, 0, 0);
 							Vector3i hiding2 = new Vector3i(0, 0, 0);
+							//avoid potential error
+							if (!Thevolume.containsKey(Name))
+							{
+								remove(Name);
+								return;
+							}
 							final Vector3i min = Thevolume.get(Name).getBlockMin();
 							final Vector3i max = Thevolume.get(Name).getBlockMax();
 							final World world = Sponge.getServer().getWorld(Theworld.get(Name).toString()).get();
@@ -498,41 +475,7 @@ public class timer
 									}
 									break;
 							}
-
-							switch (hiding)
-							{
-								//not hiding
-								case 0:
-									//next location in the world of our blocks inside a volume
-									for (int x = min.getX(); x <= max.getX(); x++) 
-									{
-										for (int y = min.getY(); y <= max.getY(); y++) 
-										{
-											for (int z = min.getZ(); z <= max.getZ(); z++) 
-											{
-												final BlockState block = Thevolume.get(ObjectName.getKey()).getBlock(x, y, z);
-												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
-												playSound(ObjectName.getKey(), world, Min, x, y, z);
-											}
-										}
-									}
-									break;
-									//hiding
-								case 1:
-									for (int x = min.getX() + hiding1.getX(); x <= max.getX() - hiding2.getX(); x++) 
-									{
-										for (int y = min.getY() + hiding1.getY(); y <= max.getY() - hiding2.getY(); y++) 
-										{
-											for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
-											{
-												final BlockState block = Thevolume.get(Name).getBlock(x, y, z);
-												world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
-												playSound(ObjectName.getKey(), world, Min, x, y, z);
-											}
-										}
-									}
-									break;
-							}
+							moveBlocks (hiding, min, max, Min, hiding1, hiding2, world, Name);
 						}
 					}
 					else
@@ -542,6 +485,58 @@ public class timer
 					}
 				}
 			}
+		}
+	}
+
+	//////
+	//
+	// copy volume content to new position
+	// args:
+	// 1: object move and disappear or object move
+	// 2: vector minimum in the volume
+	// 3: vector maximum in the volume
+	// 4: vector minimum in the world
+	// 5: hiding pos 1
+	// 6: hiding pos 2
+	// 7: the world where the blocks go
+	// 8: the name of the Mo
+	//
+	//////
+	private static void moveBlocks(int hiding, Vector3i min, Vector3i max, Vector3i Min, Vector3i hiding1, Vector3i hiding2, World world, String Name)
+	{
+		switch (hiding)
+		{
+			//not hiding
+			case 0:
+				//next location in the world of our blocks inside a volume
+				for (int x = min.getX(); x <= max.getX(); x++) 
+				{
+					for (int y = min.getY(); y <= max.getY(); y++) 
+					{
+						for (int z = min.getZ(); z <= max.getZ(); z++) 
+						{
+							final BlockState block = Thevolume.get(Name).getBlock(x, y, z);
+							world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
+							playSound(Name, world, Min, x, y, z);
+						}
+					}
+				}
+				break;
+				//hiding
+			case 1:
+				for (int x = min.getX() + hiding1.getX(); x <= max.getX() - hiding2.getX(); x++) 
+				{
+					for (int y = min.getY() + hiding1.getY(); y <= max.getY() - hiding2.getY(); y++) 
+					{
+						for (int z = min.getZ() + hiding1.getZ(); z <= max.getZ() - hiding2.getZ(); z++) 
+						{
+							final BlockState block = Thevolume.get(Name).getBlock(x, y, z);
+							world.setBlock(Min.getX() + x, Min.getY() + y, Min.getZ() + z, block, false);
+							playSound(Name, world, Min, x, y, z);
+						}
+					}
+				}
+				break;
 		}
 	}
 
@@ -674,7 +669,7 @@ public class timer
 			Thesound.remove(Name);
 		}
 	}
-	
+
 	private static void playSound(String Name, World world, Vector3i min, int x, int y, int z)
 	{
 		switch (Thesound.get(Name))
