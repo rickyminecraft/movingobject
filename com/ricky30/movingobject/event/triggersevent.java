@@ -41,26 +41,7 @@ public class triggersevent
 			{
 				if (BlockPos.compareTo(trigger) == 0)
 				{
-					//if we are here then a trigger was activated
-					int X1, X2, Y1, Y2, Z1, Z2, duration, length, currentposition;
-					String direction, currentstat, Sound;
-					boolean hide;
-					X1 = this.config.getNode("objectName", text.toString(), "depart_X").getInt();
-					Y1 = this.config.getNode("objectName", text.toString(), "depart_Y").getInt();
-					Z1 = this.config.getNode("objectName", text.toString(), "depart_Z").getInt();
-					X2 = this.config.getNode("objectName", text.toString(), "fin_X").getInt();
-					Y2 = this.config.getNode("objectName", text.toString(), "fin_Y").getInt();
-					Z2 = this.config.getNode("objectName", text.toString(), "fin_Z").getInt();
-					final Vector3i first = new Vector3i(X1, Y1, Z1);
-					final Vector3i second = new Vector3i(X2, Y2, Z2);
-					duration = this.config.getNode("objectName", text.toString(), "movingtime").getInt();
-					direction = this.config.getNode("objectName", text.toString(), "direction").getString();
-					length = this.config.getNode("objectName", text.toString(), "length").getInt();
-					currentposition = this.config.getNode("objectName", text.toString(), "currentposition").getInt();
-					currentstat = this.config.getNode("objectName", text.toString(), "currentstat").getString();
-					hide = this.config.getNode("objectName", text.toString(), "hide").getBoolean();
-					Sound = this.config.getNode("objectName", text.toString(), "sound").getString();
-					timer.start(text.toString(), duration, length, direction, currentposition, currentstat, World, hide, first, second, Sound);
+					Start(text.toString(), World);
 				}
 			}
 		}
@@ -96,31 +77,36 @@ public class triggersevent
 						//need to do this because of stupid redstone
 						if (!Activated)
 						{
-							//if we are here then a trigger was activated
-							int X1, X2, Y1, Y2, Z1, Z2, duration, length, currentposition;
-							String direction, currentstat, Sound;
-							boolean hide;
-							X1 = this.config.getNode("objectName", text.toString(), "depart_X").getInt();
-							Y1 = this.config.getNode("objectName", text.toString(), "depart_Y").getInt();
-							Z1 = this.config.getNode("objectName", text.toString(), "depart_Z").getInt();
-							X2 = this.config.getNode("objectName", text.toString(), "fin_X").getInt();
-							Y2 = this.config.getNode("objectName", text.toString(), "fin_Y").getInt();
-							Z2 = this.config.getNode("objectName", text.toString(), "fin_Z").getInt();
-							final Vector3i first = new Vector3i(X1, Y1, Z1);
-							final Vector3i second = new Vector3i(X2, Y2, Z2);
-							duration = this.config.getNode("objectName", text.toString(), "movingtime").getInt();
-							direction = this.config.getNode("objectName", text.toString(), "direction").getString();
-							length = this.config.getNode("objectName", text.toString(), "length").getInt();
-							currentposition = this.config.getNode("objectName", text.toString(), "currentposition").getInt();
-							currentstat = this.config.getNode("objectName", text.toString(), "currentstat").getString();
-							hide = this.config.getNode("objectName", text.toString(), "hide").getBoolean();
-							Sound = this.config.getNode("objectName", text.toString(), "sound").getString();
-							timer.start(text.toString(), duration, length, direction, currentposition, currentstat, World, hide, first, second, Sound);
+							Start(text.toString(), World);
 							Activated = true;
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	private void Start(String Name, String World)
+	{
+		//if we are here then a trigger was activated
+		int X1, X2, Y1, Y2, Z1, Z2, duration, length, currentposition;
+		String direction, currentstat, Sound;
+		boolean hide;
+		X1 = this.config.getNode("objectName", Name, "depart_X").getInt();
+		Y1 = this.config.getNode("objectName", Name, "depart_Y").getInt();
+		Z1 = this.config.getNode("objectName", Name, "depart_Z").getInt();
+		X2 = this.config.getNode("objectName", Name, "fin_X").getInt();
+		Y2 = this.config.getNode("objectName", Name, "fin_Y").getInt();
+		Z2 = this.config.getNode("objectName", Name, "fin_Z").getInt();
+		final Vector3i first = new Vector3i(X1, Y1, Z1);
+		final Vector3i second = new Vector3i(X2, Y2, Z2);
+		duration = this.config.getNode("objectName", Name, "movingtime").getInt();
+		direction = this.config.getNode("objectName", Name, "direction").getString();
+		length = this.config.getNode("objectName", Name, "length").getInt();
+		currentposition = this.config.getNode("objectName", Name, "currentposition").getInt();
+		currentstat = this.config.getNode("objectName", Name, "currentstat").getString();
+		hide = this.config.getNode("objectName", Name, "hide").getBoolean();
+		Sound = this.config.getNode("objectName", Name, "sound").getString();
+		timer.start(Name, duration, length, direction, currentposition, currentstat, World, hide, first, second, Sound);
 	}
 }
